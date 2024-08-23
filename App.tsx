@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Pressable,
+  ImageBackground,
 } from "react-native";
 import { Audio } from "expo-av";
 
@@ -191,7 +192,11 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require("../GuessTheNote/assets/note.png")}
+      style={styles.container}
+      imageStyle={{ opacity: 0.1, paddingLeft: 50 }}
+    >
       <Text style={styles.score}>Score: {score}</Text>
       <Text style={styles.score}>High Score: {highScore}</Text>
       <Text style={styles.score}>Attempts: {attempts}</Text>
@@ -251,7 +256,7 @@ export default function App() {
           </View>
         </View>
       </Modal>
-    </View>
+    </ImageBackground>
   );
 }
 
