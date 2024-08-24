@@ -126,12 +126,11 @@ export default function App() {
     setFinalGuessNote(note); // Track the guessed note
 
     if (note === selectedNote) {
-      setScore((prevScore) => prevScore + 1);
+      setScore((prevScore) => prevScore + 10);
       setModalTitle("Correct!");
       setModalMessage(`You guessed the note ${note} correctly!`);
       setPlayButtonDisabled(true); // Disable the button temporarily
     } else {
-      setScore((prevScore) => prevScore - 1);
       setModalTitle("Incorrect");
       setModalMessage(`The correct note was ${selectedNote}.`);
       setPlayButtonDisabled(false); // Enable the button for the next try
@@ -139,7 +138,7 @@ export default function App() {
 
     setAttempts((prevAttempts) => prevAttempts + 1);
     setDisabledNotes(notes);
-    setFinalCorrectNote(selectedNote); // Track the correct note
+    setFinalCorrectNote(selectedNote);
 
     if (attempts + 1 >= 10) {
       if (score > highScore) {
