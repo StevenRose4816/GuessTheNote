@@ -271,12 +271,7 @@ const Home: FC = () => {
             </TouchableOpacity>
           ))}
         </View>
-        <Button
-          title="Reset Game"
-          onPress={resetGame}
-          color="#ff0000"
-          disabled={attempts >= 10}
-        />
+        <Button title="Reset Game" onPress={resetGame} color="#ff0000" />
       </ScrollView>
 
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
