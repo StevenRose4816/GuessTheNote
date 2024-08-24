@@ -1,8 +1,7 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import {
   View,
   Text,
-  Button,
   Modal,
   TouchableOpacity,
   Pressable,
@@ -17,16 +16,16 @@ import { useFonts } from "expo-font";
 
 type Note =
   | "C"
-  | "C_sharp"
-  | "D"
-  | "Eb"
-  | "E"
-  | "F"
-  | "F_sharp"
-  | "G"
-  | "G_sharp"
-  | "A"
-  | "Bb"
+  // | "C_sharp"
+  // | "D"
+  // | "Eb"
+  // | "E"
+  // | "F"
+  // | "F_sharp"
+  // | "G"
+  // | "G_sharp"
+  // | "A"
+  // | "Bb"
   | "B";
 
 const Home: FC = () => {
@@ -43,6 +42,8 @@ const Home: FC = () => {
   const [playButtonDisabled, setPlayButtonDisabled] = useState<boolean>(false);
   const [finalGuessNote, setFinalGuessNote] = useState<Note | null>(null);
   const [finalCorrectNote, setFinalCorrectNote] = useState<Note | null>(null);
+  const [inExtendedPlay, setInExtendedPlay] = useState<boolean>(false); // New state
+  const [gameEnded, setGameEnded] = useState<boolean>(false); // New state
   const dispatch = useDispatch();
 
   const fontMap = {
@@ -55,52 +56,38 @@ const Home: FC = () => {
 
   const noteFiles: Record<Note, any> = {
     C: require("../../assets/c_piano.wav"),
-    C_sharp: require("../../assets/c#_piano.wav"),
-    D: require("../../assets/d_piano.wav"),
-    Eb: require("../../assets/eb_piano.wav"),
-    E: require("../../assets/e_piano.wav"),
-    F: require("../../assets/f_piano.wav"),
-    F_sharp: require("../../assets/f#_piano.wav"),
-    G: require("../../assets/g_piano.wav"),
-    G_sharp: require("../../assets/g#_piano.wav"),
-    A: require("../../assets/a_piano.wav"),
+    // C_sharp: require("../../assets/c#_piano.wav"),
+    // D: require("../../assets/d_piano.wav"),
+    // Eb: require("../../assets/eb_piano.wav"),
+    // E: require("../../assets/e_piano.wav"),
+    // F: require("../../assets/f_piano.wav"),
+    // F_sharp: require("../../assets/f#_piano.wav"),
+    // G: require("../../assets/g_piano.wav"),
+    // G_sharp: require("../../assets/g#_piano.wav"),
+    // A: require("../../assets/a_piano.wav"),
+    // Bb: require("../../assets/bb_piano.wav"),
     B: require("../../assets/b_piano.wav"),
-    Bb: require("../../assets/bb_piano.wav"),
   };
 
   const notes: Note[] = [
     "C",
-    "C_sharp",
-    "D",
-    "Eb",
-    "E",
-    "F",
-    "F_sharp",
-    "G",
-    "G_sharp",
-    "A",
-    "Bb",
+    // "C_sharp",
+    // "D",
+    // "Eb",
+    // "E",
+    // "F",
+    // "F_sharp",
+    // "G",
+    // "G_sharp",
+    // "A",
+    // "Bb",
     "B",
   ];
 
   const playNote = async () => {
-    // if (attempts >= 10) {
-    //   setModalTitle("Game Over");
-    //   setModalMessage(
-    //     `Your final score is ${score}. ${
-    //       finalGuessNote === finalCorrectNote
-    //         ? "You guessed correctly on your last attempt!"
-    //         : `On your last attempt, you guessed ${finalGuessNote}. The correct note was ${finalCorrectNote}.`
-    //     }`
-    //   );
-    //   setModalVisible(true);
-    //   return;
-    // }
-
     if (isNotePlayed) {
       return;
     }
-
     const availableNotes = notes.filter((note) => note !== selectedNote);
 
     const randomNote =
@@ -152,56 +139,84 @@ const Home: FC = () => {
     }
 
     setFinalGuessNote(note);
+    let newScore = score;
 
     if (note === selectedNote) {
-      setScore((prevScore) => prevScore + 10);
+      newScore += 10;
+      setScore(newScore);
       setModalTitle("Correct!");
       setModalMessage(
         `You guessed the note ${note.replace("_sharp", "#")} correctly.`
       );
-      setPlayButtonDisabled(true);
     } else {
       setModalTitle("Incorrect");
       setModalMessage(
         `The correct note was ${selectedNote?.replace("_sharp", "#")}.`
       );
-      setPlayButtonDisabled(false);
+
+      if (inExtendedPlay) {
+        // End game on incorrect guess during extended play
+        setGameEnded(true);
+        setModalTitle("Game Over");
+        setModalMessage(
+          `The correct note was ${selectedNote?.replace(
+            "_sharp",
+            "#"
+          )}. Your score is ${score}!`
+        );
+        setModalVisible(true);
+      }
     }
 
     setAttempts((prevAttempts) => prevAttempts + 1);
     setDisabledNotes(notes);
     setFinalCorrectNote(selectedNote);
+    setModalVisible(true);
 
-    if (attempts + 1 >= 10 && score <= 100) {
-      if (score > highScore) {
-        setHighScore(score);
-        dispatch(setHighScoreAlias({ highScore: score }));
+    if (attempts + 1 >= 10) {
+      if (newScore >= 100) {
+        if (!inExtendedPlay) {
+          setModalTitle("Congratulations!");
+          setModalMessage(
+            "Perfect score! Keep playing until you make a mistake."
+          );
+          setInExtendedPlay(true); // Enter extended play mode
+        }
+        setPlayButtonDisabled(false); // Allow the player to continue playing
+        setIsNotePlayed(false);
+        playNote();
+      } else {
+        if (newScore > highScore) {
+          setHighScore(newScore);
+          dispatch(setHighScoreAlias({ highScore: newScore }));
+        }
+        setModalTitle("Game Over");
+        setModalMessage(
+          `Your final score is ${newScore}. ${
+            note === selectedNote
+              ? "You guessed correctly on your last attempt!"
+              : `On your last attempt, you guessed ${note}. The correct note was ${selectedNote}.`
+          }`
+        );
+        setPlayButtonDisabled(true); // Disable the play button if the game is over
+        setGameEnded(true); // End game
       }
-      setModalTitle("Game Over");
-      setModalMessage(
-        `Your final score is ${score}. ${
-          finalGuessNote === finalCorrectNote
-            ? "You guessed correctly on your last attempt!"
-            : `On your last attempt, you guessed ${finalGuessNote}. The correct note was ${finalCorrectNote}.`
-        }`
-      );
     } else {
       setIsNotePlayed(false);
+      setPlayButtonDisabled(false); // Allow the player to continue playing
       playNote();
     }
-
-    setModalVisible(true);
   };
 
   const handleNotePress = (note: Note) => {
-    if (!disabledNotes.includes(note)) {
+    if (!disabledNotes.includes(note) && !gameEnded) {
       guessNote(note);
     }
   };
 
   const handleModalClose = () => {
-    if (modalTitle === "Incorrect") {
-      setPlayButtonDisabled(false);
+    if (modalTitle === "Incorrect" && gameEnded) {
+      setPlayButtonDisabled(true);
     } else if (modalTitle === "Correct!") {
       setPlayButtonDisabled(false);
       setIsNotePlayed(false);
@@ -220,6 +235,8 @@ const Home: FC = () => {
     setPlayButtonDisabled(false);
     setFinalGuessNote(null);
     setFinalCorrectNote(null);
+    setInExtendedPlay(false); // Reset extended play mode
+    setGameEnded(false); // Reset game ended state
   };
 
   return (
@@ -241,11 +258,13 @@ const Home: FC = () => {
         <Text style={styles.score}>Attempts: {attempts}</Text>
         <TouchableOpacity
           onPress={playNote}
-          disabled={playButtonDisabled || attempts >= 10}
+          disabled={
+            playButtonDisabled || gameEnded || (attempts >= 10 && score < 100)
+          }
         >
           <Text
             style={{
-              color: playButtonDisabled ? "#d3d3d3" : "#007bff",
+              color: playButtonDisabled || gameEnded ? "#d3d3d3" : "#007bff",
               fontFamily: "jersey-regular",
               fontSize: 25,
             }}
@@ -255,11 +274,16 @@ const Home: FC = () => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={replayNote}
-          disabled={attempts >= 10 || !isNotePlayed}
+          disabled={
+            gameEnded || (attempts >= 10 && score < 100) || !isNotePlayed
+          }
         >
           <Text
             style={{
-              color: "#007bff",
+              color:
+                gameEnded || (attempts >= 10 && score < 100) || !isNotePlayed
+                  ? "#d3d3d3"
+                  : "#007bff",
               fontFamily: "jersey-regular",
               fontSize: 25,
             }}
@@ -276,7 +300,7 @@ const Home: FC = () => {
                 disabledNotes.includes(note) && styles.disabledNoteButton,
               ]}
               onPress={() => handleNotePress(note)}
-              disabled={disabledNotes.includes(note)}
+              disabled={disabledNotes.includes(note) || gameEnded}
             >
               <Text style={styles.noteButtonText}>
                 {note.replace("_sharp", "#")}

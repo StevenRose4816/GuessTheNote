@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   score: {
     fontSize: 25,
     fontWeight: "bold",
-    marginVertical: 10,
+    marginVertical: 5,
     fontFamily: "jersey-regular",
   },
   modalContainer: {
