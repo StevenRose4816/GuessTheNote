@@ -59,14 +59,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 30,
     marginBottom: 10,
+    fontFamily: "jersey-regular",
   },
   modalMessage: {
-    fontSize: 18,
+    fontSize: 25,
     textAlign: "center",
     marginBottom: 20,
+    fontFamily: "jersey-regular",
   },
   modalCloseButton: {
     backgroundColor: "#007bff",
@@ -76,8 +77,8 @@ const styles = StyleSheet.create({
   },
   modalCloseButtonText: {
     color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 25,
+    fontFamily: "jersey-regular",
   },
 });
 

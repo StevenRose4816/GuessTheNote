@@ -42,10 +42,9 @@ const Home: FC = () => {
   const [playButtonDisabled, setPlayButtonDisabled] = useState<boolean>(false);
   const [finalGuessNote, setFinalGuessNote] = useState<Note | null>(null);
   const [finalCorrectNote, setFinalCorrectNote] = useState<Note | null>(null);
-  const [inExtendedPlay, setInExtendedPlay] = useState<boolean>(false); // New state
-  const [gameEnded, setGameEnded] = useState<boolean>(false); // New state
+  const [inExtendedPlay, setInExtendedPlay] = useState<boolean>(false);
+  const [gameEnded, setGameEnded] = useState<boolean>(false);
   const dispatch = useDispatch();
-
   const fontMap = {
     "dancing-script-bold": require("../../assets/DancingScript-Bold.ttf"),
     "dancing-script-regular": require("../../assets/DancingScript-Regular.ttf"),
