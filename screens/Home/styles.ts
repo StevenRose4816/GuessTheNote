@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    // backgroundColor: "#FF6F6150",
     backgroundColor: "#f8f9fa",
   },
   text: {
@@ -36,12 +37,11 @@ const styles = StyleSheet.create({
   },
   noteButtonText: {
     color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 30,
+    fontFamily: "jersey-regular",
   },
   score: {
     fontSize: 25,
-    fontWeight: "bold",
     marginVertical: 5,
     fontFamily: "jersey-regular",
   },

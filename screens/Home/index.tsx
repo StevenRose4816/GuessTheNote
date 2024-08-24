@@ -35,21 +35,18 @@ const Home: FC = () => {
   const [attempts, setAttempts] = useState<number>(0);
   const [highScore, setHighScore] = useState<number>(0);
   const [disabledNotes, setDisabledNotes] = useState<Note[]>([]);
-  const [isNotePlayed, setIsNotePlayed] = useState<boolean>(false);
+  const [hasNotePlayed, setHasNotePlayed] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [modalMessage, setModalMessage] = useState<string>("");
   const [modalTitle, setModalTitle] = useState<string>("");
   const [playButtonDisabled, setPlayButtonDisabled] = useState<boolean>(false);
-  const [finalGuessNote, setFinalGuessNote] = useState<Note | null>(null);
-  const [finalCorrectNote, setFinalCorrectNote] = useState<Note | null>(null);
   const [inExtendedPlay, setInExtendedPlay] = useState<boolean>(false);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
   const dispatch = useDispatch();
   const fontMap = {
-    "dancing-script-bold": require("../../assets/DancingScript-Bold.ttf"),
-    "dancing-script-regular": require("../../assets/DancingScript-Regular.ttf"),
-    "dancing-script-medium": require("../../assets/DancingScript-Medium.ttf"),
     "jersey-regular": require("../../assets/Jersey10-Regular.ttf"),
+    "silkscreen-regular": require("../../assets/Silkscreen-Regular.ttf"),
+    "silkscreen-bold": require("../../assets/Silkscreen-Bold.ttf"),
   };
   const [fontsLoaded] = useFonts(fontMap);
 
@@ -84,7 +81,7 @@ const Home: FC = () => {
   ];
 
   const playNote = async () => {
-    if (isNotePlayed) {
+    if (hasNotePlayed) {
       return;
     }
     const availableNotes = notes.filter((note) => note !== selectedNote);
@@ -99,7 +96,7 @@ const Home: FC = () => {
       const { sound } = await Audio.Sound.createAsync(noteFiles[randomNote]);
       setSound(sound);
       await sound.playAsync();
-      setIsNotePlayed(true);
+      setHasNotePlayed(true);
       setPlayButtonDisabled(true);
     } catch (error) {
       console.error("Playback error:", error);
@@ -130,14 +127,13 @@ const Home: FC = () => {
   };
 
   const guessNote = (note: Note) => {
-    if (!isNotePlayed) {
+    if (!hasNotePlayed) {
       setModalTitle("Warning");
       setModalMessage("You need to play a note before guessing.");
       setModalVisible(true);
       return;
     }
 
-    setFinalGuessNote(note);
     let newScore = score;
 
     if (note === selectedNote) {
@@ -168,7 +164,6 @@ const Home: FC = () => {
 
     setAttempts((prevAttempts) => prevAttempts + 1);
     setDisabledNotes(notes);
-    setFinalCorrectNote(selectedNote);
     setModalVisible(true);
 
     if (attempts + 1 >= 10) {
@@ -181,7 +176,7 @@ const Home: FC = () => {
           setInExtendedPlay(true);
         }
         setPlayButtonDisabled(false);
-        setIsNotePlayed(false);
+        setHasNotePlayed(false);
         playNote();
       } else {
         if (newScore > highScore) {
@@ -193,14 +188,20 @@ const Home: FC = () => {
           `Your final score is ${newScore}. ${
             note === selectedNote
               ? "You guessed correctly on your last attempt!"
-              : `On your last attempt, you guessed ${note}. The correct note was ${selectedNote}.`
+              : `On your last attempt, you guessed ${note?.replace(
+                  "_sharp",
+                  "#"
+                )}. The correct note was ${selectedNote?.replace(
+                  "_sharp",
+                  "#"
+                )}.`
           }`
         );
         setPlayButtonDisabled(true);
         setGameEnded(true);
       }
     } else {
-      setIsNotePlayed(false);
+      setHasNotePlayed(false);
       setPlayButtonDisabled(false);
       playNote();
     }
@@ -217,7 +218,7 @@ const Home: FC = () => {
       setPlayButtonDisabled(true);
     } else if (modalTitle === "Correct!") {
       setPlayButtonDisabled(false);
-      setIsNotePlayed(false);
+      setHasNotePlayed(false);
     }
     setModalVisible(false);
   };
@@ -228,15 +229,13 @@ const Home: FC = () => {
     setScore(0);
     setAttempts(0);
     setDisabledNotes([]);
-    setIsNotePlayed(false);
+    setHasNotePlayed(false);
     setModalVisible(false);
     setPlayButtonDisabled(false);
-    setFinalGuessNote(null);
-    setFinalCorrectNote(null);
     setInExtendedPlay(false);
     setGameEnded(false);
   };
-
+  //use silklscreen regular and make score and highscore red, one bolder than other.
   return (
     <ImageBackground
       source={require("../../assets/note.png")}
@@ -251,7 +250,9 @@ const Home: FC = () => {
         }}
       >
         <Text style={styles.text}>B#, or Bb!, C?</Text>
-        <Text style={styles.score}>Score: {score}</Text>
+        <Text style={styles.score}>
+          Score: <Text style={[styles.score, { color: "red" }]}>{score}</Text>
+        </Text>
         <Text style={styles.score}>High Score: {highScore}</Text>
         <Text style={styles.score}>Attempts: {attempts}</Text>
         <TouchableOpacity
@@ -273,13 +274,13 @@ const Home: FC = () => {
         <TouchableOpacity
           onPress={replayNote}
           disabled={
-            gameEnded || (attempts >= 10 && score < 100) || !isNotePlayed
+            gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed
           }
         >
           <Text
             style={{
               color:
-                gameEnded || (attempts >= 10 && score < 100) || !isNotePlayed
+                gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed
                   ? "#d3d3d3"
                   : "#007bff",
               fontFamily: "jersey-regular",
@@ -314,7 +315,7 @@ const Home: FC = () => {
               fontSize: 25,
             }}
           >
-            Reset Game
+            Restart Game
           </Text>
         </TouchableOpacity>
       </ScrollView>
