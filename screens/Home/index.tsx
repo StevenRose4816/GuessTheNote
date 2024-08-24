@@ -160,11 +160,15 @@ export default function Home() {
     if (note === selectedNote) {
       setScore((prevScore) => prevScore + 10);
       setModalTitle("Correct!");
-      setModalMessage(`You guessed the note ${note} correctly!`);
+      setModalMessage(
+        `You guessed the note ${note.replace("_sharp", "#")} correctly.`
+      );
       setPlayButtonDisabled(true); // Disable the button temporarily
     } else {
       setModalTitle("Incorrect");
-      setModalMessage(`The correct note was ${selectedNote}.`);
+      setModalMessage(
+        `The correct note was ${selectedNote?.replace("_sharp", "#")}.`
+      );
       setPlayButtonDisabled(false); // Enable the button for the next try
     }
 
