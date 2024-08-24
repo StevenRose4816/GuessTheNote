@@ -9,6 +9,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#f8f9fa",
   },
+  text: {
+    fontFamily: "jersey-regular",
+    fontSize: 60,
+    marginBottom: 20,
+  },
   noteContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -35,9 +40,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   score: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: "bold",
     marginVertical: 10,
+    fontFamily: "jersey-regular",
   },
   modalContainer: {
     flex: 1,

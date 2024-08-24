@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { Audio } from "expo-av";
 import styles from "./styles";
 import { useDispatch } from "react-redux";
 import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
+import { useFonts } from "expo-font";
 
 type Note =
   | "C"
@@ -43,6 +44,14 @@ const Home: FC = () => {
   const [finalGuessNote, setFinalGuessNote] = useState<Note | null>(null);
   const [finalCorrectNote, setFinalCorrectNote] = useState<Note | null>(null);
   const dispatch = useDispatch();
+
+  const fontMap = {
+    "dancing-script-bold": require("../../assets/DancingScript-Bold.ttf"),
+    "dancing-script-regular": require("../../assets/DancingScript-Regular.ttf"),
+    "dancing-script-medium": require("../../assets/DancingScript-Medium.ttf"),
+    "jersey-regular": require("../../assets/Jersey10-Regular.ttf"),
+  };
+  const [fontsLoaded] = useFonts(fontMap);
 
   const noteFiles: Record<Note, any> = {
     C: require("../../assets/c_piano.wav"),
@@ -75,18 +84,18 @@ const Home: FC = () => {
   ];
 
   const playNote = async () => {
-    if (attempts >= 10) {
-      setModalTitle("Game Over");
-      setModalMessage(
-        `Your final score is ${score}. ${
-          finalGuessNote === finalCorrectNote
-            ? "You guessed correctly on your last attempt!"
-            : `On your last attempt, you guessed ${finalGuessNote}. The correct note was ${finalCorrectNote}.`
-        }`
-      );
-      setModalVisible(true);
-      return;
-    }
+    // if (attempts >= 10) {
+    //   setModalTitle("Game Over");
+    //   setModalMessage(
+    //     `Your final score is ${score}. ${
+    //       finalGuessNote === finalCorrectNote
+    //         ? "You guessed correctly on your last attempt!"
+    //         : `On your last attempt, you guessed ${finalGuessNote}. The correct note was ${finalCorrectNote}.`
+    //     }`
+    //   );
+    //   setModalVisible(true);
+    //   return;
+    // }
 
     if (isNotePlayed) {
       return;
@@ -226,21 +235,38 @@ const Home: FC = () => {
           alignItems: "center",
         }}
       >
+        <Text style={styles.text}>B#, or Bb!, C?</Text>
         <Text style={styles.score}>Score: {score}</Text>
         <Text style={styles.score}>High Score: {highScore}</Text>
         <Text style={styles.score}>Attempts: {attempts}</Text>
-        <Button
-          title="Play Note"
+        <TouchableOpacity
           onPress={playNote}
           disabled={playButtonDisabled || attempts >= 10}
-          color={playButtonDisabled ? "#d3d3d3" : "#007bff"}
-        />
-        <Button
-          title="Replay Note"
+        >
+          <Text
+            style={{
+              color: playButtonDisabled ? "#d3d3d3" : "#007bff",
+              fontFamily: "jersey-regular",
+              fontSize: 25,
+            }}
+          >
+            Play Note
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={replayNote}
           disabled={attempts >= 10 || !isNotePlayed}
-          color="#007bff"
-        />
+        >
+          <Text
+            style={{
+              color: "#007bff",
+              fontFamily: "jersey-regular",
+              fontSize: 25,
+            }}
+          >
+            Replay Note
+          </Text>
+        </TouchableOpacity>
         <View style={styles.noteContainer}>
           {notes.map((note) => (
             <TouchableOpacity
@@ -258,7 +284,17 @@ const Home: FC = () => {
             </TouchableOpacity>
           ))}
         </View>
-        <Button title="Reset Game" onPress={resetGame} color="#ff0000" />
+        <TouchableOpacity onPress={resetGame}>
+          <Text
+            style={{
+              color: "#ff0000",
+              fontFamily: "jersey-regular",
+              fontSize: 25,
+            }}
+          >
+            Reset Game
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
 
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
