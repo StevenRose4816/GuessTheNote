@@ -16,16 +16,16 @@ import { useFonts } from "expo-font";
 
 type Note =
   | "C"
-  // | "C_sharp"
-  // | "D"
-  // | "Eb"
-  // | "E"
-  // | "F"
-  // | "F_sharp"
-  // | "G"
-  // | "G_sharp"
-  // | "A"
-  // | "Bb"
+  | "C_sharp"
+  | "D"
+  | "Eb"
+  | "E"
+  | "F"
+  | "F_sharp"
+  | "G"
+  | "G_sharp"
+  | "A"
+  | "Bb"
   | "B";
 
 const Home: FC = () => {
@@ -56,31 +56,31 @@ const Home: FC = () => {
 
   const noteFiles: Record<Note, any> = {
     C: require("../../assets/c_piano.wav"),
-    // C_sharp: require("../../assets/c#_piano.wav"),
-    // D: require("../../assets/d_piano.wav"),
-    // Eb: require("../../assets/eb_piano.wav"),
-    // E: require("../../assets/e_piano.wav"),
-    // F: require("../../assets/f_piano.wav"),
-    // F_sharp: require("../../assets/f#_piano.wav"),
-    // G: require("../../assets/g_piano.wav"),
-    // G_sharp: require("../../assets/g#_piano.wav"),
-    // A: require("../../assets/a_piano.wav"),
-    // Bb: require("../../assets/bb_piano.wav"),
+    C_sharp: require("../../assets/c#_piano.wav"),
+    D: require("../../assets/d_piano.wav"),
+    Eb: require("../../assets/eb_piano.wav"),
+    E: require("../../assets/e_piano.wav"),
+    F: require("../../assets/f_piano.wav"),
+    F_sharp: require("../../assets/f#_piano.wav"),
+    G: require("../../assets/g_piano.wav"),
+    G_sharp: require("../../assets/g#_piano.wav"),
+    A: require("../../assets/a_piano.wav"),
+    Bb: require("../../assets/bb_piano.wav"),
     B: require("../../assets/b_piano.wav"),
   };
 
   const notes: Note[] = [
     "C",
-    // "C_sharp",
-    // "D",
-    // "Eb",
-    // "E",
-    // "F",
-    // "F_sharp",
-    // "G",
-    // "G_sharp",
-    // "A",
-    // "Bb",
+    "C_sharp",
+    "D",
+    "Eb",
+    "E",
+    "F",
+    "F_sharp",
+    "G",
+    "G_sharp",
+    "A",
+    "Bb",
     "B",
   ];
 
@@ -155,7 +155,6 @@ const Home: FC = () => {
       );
 
       if (inExtendedPlay) {
-        // End game on incorrect guess during extended play
         setGameEnded(true);
         setModalTitle("Game Over");
         setModalMessage(
@@ -180,9 +179,9 @@ const Home: FC = () => {
           setModalMessage(
             "Perfect score! Keep playing until you make a mistake."
           );
-          setInExtendedPlay(true); // Enter extended play mode
+          setInExtendedPlay(true);
         }
-        setPlayButtonDisabled(false); // Allow the player to continue playing
+        setPlayButtonDisabled(false);
         setIsNotePlayed(false);
         playNote();
       } else {
@@ -198,12 +197,12 @@ const Home: FC = () => {
               : `On your last attempt, you guessed ${note}. The correct note was ${selectedNote}.`
           }`
         );
-        setPlayButtonDisabled(true); // Disable the play button if the game is over
-        setGameEnded(true); // End game
+        setPlayButtonDisabled(true);
+        setGameEnded(true);
       }
     } else {
       setIsNotePlayed(false);
-      setPlayButtonDisabled(false); // Allow the player to continue playing
+      setPlayButtonDisabled(false);
       playNote();
     }
   };
@@ -235,8 +234,8 @@ const Home: FC = () => {
     setPlayButtonDisabled(false);
     setFinalGuessNote(null);
     setFinalCorrectNote(null);
-    setInExtendedPlay(false); // Reset extended play mode
-    setGameEnded(false); // Reset game ended state
+    setInExtendedPlay(false);
+    setGameEnded(false);
   };
 
   return (
