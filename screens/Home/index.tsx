@@ -201,6 +201,7 @@ const Home: FC = () => {
         setGameEnded(true);
       }
     } else {
+      // We keep playing
       setHasNotePlayed(false);
       setPlayButtonDisabled(false);
       playNote();
@@ -223,7 +224,7 @@ const Home: FC = () => {
     setModalVisible(false);
   };
 
-  const resetGame = () => {
+  const restartGame = () => {
     setSelectedNote(null);
     setSound(null);
     setScore(0);
@@ -235,7 +236,7 @@ const Home: FC = () => {
     setInExtendedPlay(false);
     setGameEnded(false);
   };
-  //use silklscreen regular and make score and highscore red, one bolder than other.
+
   return (
     <ImageBackground
       source={require("../../assets/note.png")}
@@ -254,7 +255,7 @@ const Home: FC = () => {
           Score: <Text style={[styles.score, { color: "red" }]}>{score}</Text>
         </Text>
         <Text style={styles.score}>High Score: {highScore}</Text>
-        <Text style={styles.score}>Attempts: {attempts}</Text>
+        <Text style={styles.score}>Attempts: {attempts} / 10</Text>
         <TouchableOpacity
           onPress={playNote}
           disabled={
@@ -307,7 +308,7 @@ const Home: FC = () => {
             </TouchableOpacity>
           ))}
         </View>
-        <TouchableOpacity onPress={resetGame}>
+        <TouchableOpacity onPress={restartGame}>
           <Text
             style={{
               color: "#ff0000",
