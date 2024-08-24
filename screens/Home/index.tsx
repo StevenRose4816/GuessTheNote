@@ -135,19 +135,6 @@ const Home: FC = () => {
   };
 
   const guessNote = (note: Note) => {
-    if (attempts >= 10) {
-      setModalTitle("Game Over");
-      setModalMessage(
-        `Your final score is ${score}. ${
-          finalGuessNote === finalCorrectNote
-            ? "You guessed correctly on your last attempt!"
-            : `On your last attempt, you guessed ${finalGuessNote}. The correct note was ${finalCorrectNote}.`
-        }`
-      );
-      setModalVisible(true);
-      return;
-    }
-
     if (!isNotePlayed) {
       setModalTitle("Warning");
       setModalMessage("You need to play a note before guessing.");
@@ -176,7 +163,7 @@ const Home: FC = () => {
     setDisabledNotes(notes);
     setFinalCorrectNote(selectedNote);
 
-    if (attempts + 1 >= 10) {
+    if (attempts + 1 >= 10 && score <= 100) {
       if (score > highScore) {
         setHighScore(score);
         dispatch(setHighScoreAlias({ highScore: score }));
