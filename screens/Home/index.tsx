@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import {
   View,
   Text,
   Button,
   Modal,
-  StyleSheet,
   TouchableOpacity,
   Pressable,
   ImageBackground,
@@ -12,6 +11,8 @@ import {
 } from "react-native";
 import { Audio } from "expo-av";
 import styles from "./styles";
+import { useDispatch } from "react-redux";
+import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
 
 type Note =
   | "C"
@@ -57,7 +58,7 @@ const noteFiles: Record<Note, any> = {
   Bb: require("../../assets/bb_piano.wav"),
 };
 
-export default function Home() {
+const Home: FC = () => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const [score, setScore] = useState<number>(0);
@@ -71,6 +72,7 @@ export default function Home() {
   const [playButtonDisabled, setPlayButtonDisabled] = useState<boolean>(false);
   const [finalGuessNote, setFinalGuessNote] = useState<Note | null>(null); // Track final guess
   const [finalCorrectNote, setFinalCorrectNote] = useState<Note | null>(null); // Track final correct note
+  const dispatch = useDispatch();
 
   const playNote = async () => {
     if (attempts >= 10) {
@@ -179,6 +181,7 @@ export default function Home() {
     if (attempts + 1 >= 10) {
       if (score > highScore) {
         setHighScore(score);
+        dispatch(setHighScoreAlias({ highScore: score }));
       }
       setModalTitle("Game Over");
       setModalMessage(
@@ -295,4 +298,6 @@ export default function Home() {
       </Modal>
     </ImageBackground>
   );
-}
+};
+
+export default Home;
