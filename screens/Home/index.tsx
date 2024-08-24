@@ -8,21 +8,53 @@ import {
   TouchableOpacity,
   Pressable,
   ImageBackground,
+  ScrollView,
 } from "react-native";
 import { Audio } from "expo-av";
+import styles from "./styles";
 
-type Note = "C" | "D" | "E" | "F" | "G" | "A" | "B";
+type Note =
+  | "C"
+  | "C_sharp"
+  | "D"
+  | "Eb"
+  | "E"
+  | "F"
+  | "F_sharp"
+  | "G"
+  | "G_sharp"
+  | "A"
+  | "Bb"
+  | "B";
 
-const notes: Note[] = ["C", "D", "E", "F", "G", "A", "B"];
+const notes: Note[] = [
+  "C",
+  "C_sharp",
+  "D",
+  "Eb",
+  "E",
+  "F",
+  "F_sharp",
+  "G",
+  "G_sharp",
+  "A",
+  "Bb",
+  "B",
+];
 
 const noteFiles: Record<Note, any> = {
   C: require("../../assets/c_piano.wav"),
+  C_sharp: require("../../assets/c#_piano.wav"),
   D: require("../../assets/d_piano.wav"),
+  Eb: require("../../assets/eb_piano.wav"),
   E: require("../../assets/e_piano.wav"),
   F: require("../../assets/f_piano.wav"),
+  F_sharp: require("../../assets/f#_piano.wav"),
   G: require("../../assets/g_piano.wav"),
+  G_sharp: require("../../assets/g#_piano.wav"),
   A: require("../../assets/a_piano.wav"),
   B: require("../../assets/b_piano.wav"),
+  Bb: require("../../assets/bb_piano.wav"),
 };
 
 export default function Home() {
@@ -196,61 +228,63 @@ export default function Home() {
       style={styles.container}
       imageStyle={{ opacity: 0.1, paddingLeft: 50 }}
     >
-      <Text style={styles.score}>Score: {score}</Text>
-      <Text style={styles.score}>High Score: {highScore}</Text>
-      <Text style={styles.score}>Attempts: {attempts}</Text>
-      <Button
-        title="Play Note"
-        onPress={playNote}
-        disabled={playButtonDisabled || attempts >= 10}
-        color={playButtonDisabled ? "#d3d3d3" : "#007bff"}
-      />
-      <Button
-        title="Replay Note"
-        onPress={replayNote}
-        disabled={!isNotePlayed || attempts >= 10}
-      />
-      {selectedNote && (
-        <View style={styles.buttonContainer}>
-          <Text>Guess the note:</Text>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text style={styles.score}>Score: {score}</Text>
+        <Text style={styles.score}>High Score: {highScore}</Text>
+        <Text style={styles.score}>Attempts: {attempts}</Text>
+        <Button
+          title="Play Note"
+          onPress={playNote}
+          disabled={playButtonDisabled || attempts >= 10}
+          color={playButtonDisabled ? "#d3d3d3" : "#007bff"}
+        />
+        <Button
+          title="Replay Note"
+          onPress={replayNote}
+          disabled={attempts >= 10 || !isNotePlayed}
+          color="#007bff"
+        />
+        <View style={styles.noteContainer}>
           {notes.map((note) => (
             <TouchableOpacity
               key={note}
               style={[
                 styles.noteButton,
-                disabledNotes.includes(note) && styles.disabledButton,
+                disabledNotes.includes(note) && styles.disabledNoteButton,
               ]}
               onPress={() => handleNotePress(note)}
               disabled={disabledNotes.includes(note)}
             >
-              <Text
-                style={[
-                  styles.noteText,
-                  disabledNotes.includes(note) && styles.disabledText,
-                ]}
-              >
-                {note}
+              <Text style={styles.noteButtonText}>
+                {note.replace("_sharp", "#")}
               </Text>
             </TouchableOpacity>
           ))}
         </View>
-      )}
-      <Modal transparent={true} visible={modalVisible} animationType="slide">
+        <Button
+          title="Reset Game"
+          onPress={resetGame}
+          color="#ff0000"
+          disabled={attempts >= 10}
+        />
+      </ScrollView>
+
+      <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>{modalTitle}</Text>
             <Text style={styles.modalMessage}>{modalMessage}</Text>
             <Pressable
-              style={styles.modalButton}
-              onPress={() => {
-                if (modalTitle === "Game Over") {
-                  resetGame();
-                } else {
-                  handleModalClose();
-                }
-              }}
+              onPress={handleModalClose}
+              style={styles.modalCloseButton}
             >
-              <Text style={styles.modalButtonText}>OK</Text>
+              <Text style={styles.modalCloseButtonText}>Close</Text>
             </Pressable>
           </View>
         </View>
@@ -258,66 +292,3 @@ export default function Home() {
     </ImageBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  score: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
-  buttonContainer: {
-    marginTop: 20,
-  },
-  noteButton: {
-    margin: 5,
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: "#007bff",
-  },
-  disabledButton: {
-    backgroundColor: "#d3d3d3",
-  },
-  noteText: {
-    color: "#fff",
-    fontSize: 18,
-  },
-  disabledText: {
-    color: "#a9a9a9",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContent: {
-    width: 300,
-    padding: 20,
-    borderRadius: 10,
-    backgroundColor: "#fff",
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  modalMessage: {
-    fontSize: 16,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  modalButton: {
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: "#007bff",
-  },
-  modalButtonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
-});
