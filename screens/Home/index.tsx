@@ -28,36 +28,6 @@ type Note =
   | "Bb"
   | "B";
 
-const notes: Note[] = [
-  "C",
-  "C_sharp",
-  "D",
-  "Eb",
-  "E",
-  "F",
-  "F_sharp",
-  "G",
-  "G_sharp",
-  "A",
-  "Bb",
-  "B",
-];
-
-const noteFiles: Record<Note, any> = {
-  C: require("../../assets/c_piano.wav"),
-  C_sharp: require("../../assets/c#_piano.wav"),
-  D: require("../../assets/d_piano.wav"),
-  Eb: require("../../assets/eb_piano.wav"),
-  E: require("../../assets/e_piano.wav"),
-  F: require("../../assets/f_piano.wav"),
-  F_sharp: require("../../assets/f#_piano.wav"),
-  G: require("../../assets/g_piano.wav"),
-  G_sharp: require("../../assets/g#_piano.wav"),
-  A: require("../../assets/a_piano.wav"),
-  B: require("../../assets/b_piano.wav"),
-  Bb: require("../../assets/bb_piano.wav"),
-};
-
 const Home: FC = () => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -70,9 +40,39 @@ const Home: FC = () => {
   const [modalMessage, setModalMessage] = useState<string>("");
   const [modalTitle, setModalTitle] = useState<string>("");
   const [playButtonDisabled, setPlayButtonDisabled] = useState<boolean>(false);
-  const [finalGuessNote, setFinalGuessNote] = useState<Note | null>(null); // Track final guess
-  const [finalCorrectNote, setFinalCorrectNote] = useState<Note | null>(null); // Track final correct note
+  const [finalGuessNote, setFinalGuessNote] = useState<Note | null>(null);
+  const [finalCorrectNote, setFinalCorrectNote] = useState<Note | null>(null);
   const dispatch = useDispatch();
+
+  const noteFiles: Record<Note, any> = {
+    C: require("../../assets/c_piano.wav"),
+    C_sharp: require("../../assets/c#_piano.wav"),
+    D: require("../../assets/d_piano.wav"),
+    Eb: require("../../assets/eb_piano.wav"),
+    E: require("../../assets/e_piano.wav"),
+    F: require("../../assets/f_piano.wav"),
+    F_sharp: require("../../assets/f#_piano.wav"),
+    G: require("../../assets/g_piano.wav"),
+    G_sharp: require("../../assets/g#_piano.wav"),
+    A: require("../../assets/a_piano.wav"),
+    B: require("../../assets/b_piano.wav"),
+    Bb: require("../../assets/bb_piano.wav"),
+  };
+
+  const notes: Note[] = [
+    "C",
+    "C_sharp",
+    "D",
+    "Eb",
+    "E",
+    "F",
+    "F_sharp",
+    "G",
+    "G_sharp",
+    "A",
+    "Bb",
+    "B",
+  ];
 
   const playNote = async () => {
     if (attempts >= 10) {
@@ -89,13 +89,11 @@ const Home: FC = () => {
     }
 
     if (isNotePlayed) {
-      return; // Do nothing if a note is already played
+      return;
     }
 
-    // Filter out the current selectedNote from the list of notes
     const availableNotes = notes.filter((note) => note !== selectedNote);
 
-    // Randomly select a new note from the filtered list
     const randomNote =
       availableNotes[Math.floor(Math.random() * availableNotes.length)];
 
@@ -107,7 +105,7 @@ const Home: FC = () => {
       setSound(sound);
       await sound.playAsync();
       setIsNotePlayed(true);
-      setPlayButtonDisabled(true); // Disable the button after playing a note
+      setPlayButtonDisabled(true);
     } catch (error) {
       console.error("Playback error:", error);
       setModalTitle("Error");
@@ -157,7 +155,7 @@ const Home: FC = () => {
       return;
     }
 
-    setFinalGuessNote(note); // Track the guessed note
+    setFinalGuessNote(note);
 
     if (note === selectedNote) {
       setScore((prevScore) => prevScore + 10);
@@ -165,13 +163,13 @@ const Home: FC = () => {
       setModalMessage(
         `You guessed the note ${note.replace("_sharp", "#")} correctly.`
       );
-      setPlayButtonDisabled(true); // Disable the button temporarily
+      setPlayButtonDisabled(true);
     } else {
       setModalTitle("Incorrect");
       setModalMessage(
         `The correct note was ${selectedNote?.replace("_sharp", "#")}.`
       );
-      setPlayButtonDisabled(false); // Enable the button for the next try
+      setPlayButtonDisabled(false);
     }
 
     setAttempts((prevAttempts) => prevAttempts + 1);
@@ -193,10 +191,10 @@ const Home: FC = () => {
       );
     } else {
       setIsNotePlayed(false);
-      playNote(); // Ensure a new note is played after each guess
+      playNote();
     }
 
-    setModalVisible(true); // Show the modal regardless of guess correctness
+    setModalVisible(true);
   };
 
   const handleNotePress = (note: Note) => {
@@ -207,11 +205,10 @@ const Home: FC = () => {
 
   const handleModalClose = () => {
     if (modalTitle === "Incorrect") {
-      setPlayButtonDisabled(false); // Enable the "Play Note" button when the "Incorrect" modal is closed
-    } else if (modalTitle === "Correct!") {
-      // Enable the buttons after a correct guess
       setPlayButtonDisabled(false);
-      setIsNotePlayed(false); // Allow a new note to be played
+    } else if (modalTitle === "Correct!") {
+      setPlayButtonDisabled(false);
+      setIsNotePlayed(false);
     }
     setModalVisible(false);
   };
@@ -224,9 +221,9 @@ const Home: FC = () => {
     setDisabledNotes([]);
     setIsNotePlayed(false);
     setModalVisible(false);
-    setPlayButtonDisabled(false); // Enable the button when resetting the game
-    setFinalGuessNote(null); // Reset final guess note
-    setFinalCorrectNote(null); // Reset final correct note
+    setPlayButtonDisabled(false);
+    setFinalGuessNote(null);
+    setFinalCorrectNote(null);
   };
 
   return (
