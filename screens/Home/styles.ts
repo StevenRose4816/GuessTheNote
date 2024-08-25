@@ -80,6 +80,20 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontFamily: "jersey-regular",
   },
+  restartText: {
+    color: "#ff0000",
+    fontFamily: "jersey-regular",
+    fontSize: 25,
+  },
+  scrollView: {
+    flexGrow: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imageStyle: {
+    opacity: 0.1,
+    paddingLeft: 50,
+  },
 });
 
 export default styles;

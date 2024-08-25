@@ -8,7 +8,7 @@ import {
   ImageBackground,
   ScrollView,
 } from "react-native";
-import { Audio } from "expo-av";
+import { Audio, AVPlaybackSource } from "expo-av";
 import styles from "./styles";
 import { useDispatch } from "react-redux";
 import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
@@ -54,7 +54,7 @@ const Home: FC = () => {
   const isPlayDisabled =
     playButtonDisabled || gameEnded || (attempts >= 10 && score < 100);
 
-  const noteFiles: Record<Note, any> = {
+  const noteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/c_piano.wav"),
     C_sharp: require("../../assets/c#_piano.wav"),
     D: require("../../assets/d_piano.wav"),
@@ -239,15 +239,9 @@ const Home: FC = () => {
     <ImageBackground
       source={require("../../assets/note.png")}
       style={styles.container}
-      imageStyle={{ opacity: 0.1, paddingLeft: 50 }}
+      imageStyle={styles.imageStyle}
     >
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <ScrollView contentContainerStyle={styles.scrollView}>
         <Text style={styles.text}>B# or Bb! C?</Text>
         <Text style={styles.score}>
           Score: <Text style={[styles.score, { color: "red" }]}>{score}</Text>
@@ -294,15 +288,7 @@ const Home: FC = () => {
           ))}
         </View>
         <TouchableOpacity onPress={restartGame}>
-          <Text
-            style={{
-              color: "#ff0000",
-              fontFamily: "jersey-regular",
-              fontSize: 25,
-            }}
-          >
-            Restart Game
-          </Text>
+          <Text style={styles.restartText}>Restart Game</Text>
         </TouchableOpacity>
       </ScrollView>
 
