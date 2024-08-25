@@ -173,9 +173,9 @@ const Home: FC = () => {
         dispatch(setHighScoreAlias({ highScore: updatedScore }));
         setModalTitle("Game Over");
         setModalMessage(
-          `Your final score is ${updatedScore}. ${
+          `Your final score is ${updatedScore} and you set the new record! ${
             isCorrectGuess
-              ? "You guessed correctly on your last attempt!"
+              ? "You also guessed correctly on your last attempt."
               : `On your last attempt, you guessed ${note?.replace(
                   "_sharp",
                   "#"
