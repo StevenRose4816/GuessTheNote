@@ -8,12 +8,11 @@ import {
   ImageBackground,
   ScrollView,
 } from "react-native";
-import { Audio, AVPlaybackSource } from "expo-av";
+import { Audio } from "expo-av";
 import styles from "./styles";
 import { useDispatch } from "react-redux";
 import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
 import { useFonts } from "expo-font";
-
 type Note =
   | "C"
   | "C_sharp"
@@ -27,7 +26,6 @@ type Note =
   | "A"
   | "Bb"
   | "B";
-
 const Home: FC = () => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -49,12 +47,7 @@ const Home: FC = () => {
     "silkscreen-bold": require("../../assets/Silkscreen-Bold.ttf"),
   };
   const [fontsLoaded] = useFonts(fontMap);
-  const isReplayDisabled =
-    gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed;
-  const isPlayDisabled =
-    playButtonDisabled || gameEnded || (attempts >= 10 && score < 100);
-
-  const noteFiles: Record<Note, AVPlaybackSource> = {
+  const noteFiles: Record<Note, any> = {
     C: require("../../assets/c_piano.wav"),
     C_sharp: require("../../assets/c#_piano.wav"),
     D: require("../../assets/d_piano.wav"),
@@ -68,7 +61,6 @@ const Home: FC = () => {
     Bb: require("../../assets/bb_piano.wav"),
     B: require("../../assets/b_piano.wav"),
   };
-
   const notes: Note[] = [
     "C",
     "C_sharp",
@@ -83,19 +75,15 @@ const Home: FC = () => {
     "Bb",
     "B",
   ];
-
   const playNote = async () => {
     if (hasNotePlayed) {
       return;
     }
     const availableNotes = notes.filter((note) => note !== selectedNote);
-
     const randomNote =
       availableNotes[Math.floor(Math.random() * availableNotes.length)];
-
     setSelectedNote(randomNote);
     setDisabledNotes([]);
-
     try {
       const { sound } = await Audio.Sound.createAsync(noteFiles[randomNote]);
       setSound(sound);
@@ -109,7 +97,6 @@ const Home: FC = () => {
       setModalVisible(true);
     }
   };
-
   const replayNote = async () => {
     if (!selectedNote) {
       setModalTitle("Warning");
@@ -117,7 +104,6 @@ const Home: FC = () => {
       setModalVisible(true);
       return;
     }
-
     try {
       const { sound } = await Audio.Sound.createAsync(noteFiles[selectedNote]);
       setSound(sound);
@@ -131,6 +117,7 @@ const Home: FC = () => {
   };
 
   const guessNote = (note: Note) => {
+    // Tried to guess without listening to note first
     if (!hasNotePlayed) {
       setModalTitle("Warning");
       setModalMessage("You need to play a note before guessing.");
@@ -138,80 +125,92 @@ const Home: FC = () => {
       return;
     }
 
-    const isCorrectGuess = note === selectedNote;
-    const updatedScore = isCorrectGuess ? score + 10 : score;
-
-    if (isCorrectGuess) {
+    let newScore = score;
+    // Correct guess
+    if (note === selectedNote) {
+      newScore += 10;
+      setScore(newScore);
       setModalTitle("Correct!");
       setModalMessage(
         `You guessed the note ${note.replace("_sharp", "#")} correctly.`
       );
     } else {
+      // Incorrect guess
       setModalTitle("Incorrect");
       setModalMessage(
         `The correct note was ${selectedNote?.replace("_sharp", "#")}.`
       );
+      // User is on turn 10+ and has made an incorrect guess.
+      if (inExtendedPlay && score > highScore) {
+        setGameEnded(true);
+        setModalTitle("Game Over");
+        setModalMessage(
+          `The correct note was ${selectedNote?.replace(
+            "_sharp",
+            "#"
+          )}. You set the new high score! Your score is ${score}.`
+        );
+        setHighScore(newScore);
+        dispatch(setHighScoreAlias({ highScore: newScore }));
+        // setModalVisible(true);
+      } else if (inExtendedPlay) {
+        setGameEnded(true);
+        setModalTitle("Game Over");
+        setModalMessage(
+          `The correct note was ${selectedNote?.replace(
+            "_sharp",
+            "#"
+          )}. Your score is ${score}.`
+        );
+      }
+      setModalVisible(true);
     }
 
-    setScore(updatedScore);
     setAttempts((prevAttempts) => prevAttempts + 1);
     setDisabledNotes(notes);
     setModalVisible(true);
 
-    const isFinalAttempt = attempts + 1 >= 10;
-    const isGameOver = !isCorrectGuess && inExtendedPlay;
-
-    if (isFinalAttempt) {
-      if (updatedScore >= 100 && !inExtendedPlay) {
-        setModalTitle("Congratulations!");
-        setModalMessage(
-          "Perfect score! Keep playing until you make a mistake."
-        );
-        setInExtendedPlay(true);
-      } else if (updatedScore > highScore) {
-        setHighScore(updatedScore);
-        dispatch(setHighScoreAlias({ highScore: updatedScore }));
+    if (attempts + 1 >= 10) {
+      // User is on 10+ turn and made a correct guess
+      if (newScore >= 100) {
+        if (!inExtendedPlay) {
+          setModalTitle("Congratulations!");
+          setModalMessage(
+            "Perfect score! Keep playing until you make a mistake."
+          );
+          setInExtendedPlay(true);
+        }
+        setPlayButtonDisabled(false);
+        setHasNotePlayed(false);
+        playNote();
+      } else {
+        // Game is over and user has NOT made new high score
         setModalTitle("Game Over");
         setModalMessage(
-          `Your final score is ${updatedScore} and you set the new record! ${
-            isCorrectGuess
-              ? "You also guessed correctly on your last attempt."
+          `Your final score is ${newScore}. ${
+            note === selectedNote
+              ? "You guessed correctly on your last attempt!"
               : `On your last attempt, you guessed ${note?.replace(
-                  "_sharp",
-                  "#"
-                )}. The correct note was ${selectedNote?.replace(
                   "_sharp",
                   "#"
                 )}.`
           }`
         );
-        setGameEnded(true);
-      } else {
+        setPlayButtonDisabled(true);
         setGameEnded(true);
       }
-      setPlayButtonDisabled(true);
-    } else if (isGameOver) {
-      setGameEnded(true);
-      setModalTitle("Game Over");
-      setModalMessage(
-        `The correct note was ${selectedNote?.replace(
-          "_sharp",
-          "#"
-        )}. Your score is ${score}!`
-      );
     } else {
+      // On to the next try
       setHasNotePlayed(false);
       setPlayButtonDisabled(false);
       playNote();
     }
   };
-
   const handleNotePress = (note: Note) => {
     if (!disabledNotes.includes(note) && !gameEnded) {
       guessNote(note);
     }
   };
-
   const handleModalClose = () => {
     if (modalTitle === "Incorrect" && gameEnded) {
       setPlayButtonDisabled(true);
@@ -221,7 +220,6 @@ const Home: FC = () => {
     }
     setModalVisible(false);
   };
-
   const restartGame = () => {
     setSelectedNote(null);
     setSound(null);
@@ -234,21 +232,31 @@ const Home: FC = () => {
     setInExtendedPlay(false);
     setGameEnded(false);
   };
-
   return (
     <ImageBackground
       source={require("../../assets/note.png")}
       style={styles.container}
-      imageStyle={styles.imageStyle}
+      imageStyle={{ opacity: 0.1, paddingLeft: 50 }}
     >
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Text style={styles.text}>B# or Bb! C?</Text>
         <Text style={styles.score}>
           Score: <Text style={[styles.score, { color: "red" }]}>{score}</Text>
         </Text>
         <Text style={styles.score}>High Score: {highScore}</Text>
-        <Text style={styles.score}>Attempts: {attempts} / 10+</Text>
-        <TouchableOpacity onPress={playNote} disabled={isPlayDisabled}>
+        <Text style={styles.score}>Attempts: {attempts} / 10</Text>
+        <TouchableOpacity
+          onPress={playNote}
+          disabled={
+            playButtonDisabled || gameEnded || (attempts >= 10 && score < 100)
+          }
+        >
           <Text
             style={{
               color: playButtonDisabled || gameEnded ? "#d3d3d3" : "#007bff",
@@ -259,10 +267,18 @@ const Home: FC = () => {
             Play Note
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={replayNote} disabled={isReplayDisabled}>
+        <TouchableOpacity
+          onPress={replayNote}
+          disabled={
+            gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed
+          }
+        >
           <Text
             style={{
-              color: isReplayDisabled ? "#d3d3d3" : "#007bff",
+              color:
+                gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed
+                  ? "#d3d3d3"
+                  : "#007bff",
               fontFamily: "jersey-regular",
               fontSize: 25,
             }}
@@ -288,10 +304,17 @@ const Home: FC = () => {
           ))}
         </View>
         <TouchableOpacity onPress={restartGame}>
-          <Text style={styles.restartText}>Restart Game</Text>
+          <Text
+            style={{
+              color: "#ff0000",
+              fontFamily: "jersey-regular",
+              fontSize: 25,
+            }}
+          >
+            Restart Game
+          </Text>
         </TouchableOpacity>
       </ScrollView>
-
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -309,5 +332,4 @@ const Home: FC = () => {
     </ImageBackground>
   );
 };
-
 export default Home;
