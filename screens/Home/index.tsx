@@ -49,6 +49,10 @@ const Home: FC = () => {
     "silkscreen-bold": require("../../assets/Silkscreen-Bold.ttf"),
   };
   const [fontsLoaded] = useFonts(fontMap);
+  const isReplayDisabled =
+    gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed;
+  const isPlayDisabled =
+    playButtonDisabled || gameEnded || (attempts >= 10 && score < 100);
 
   const noteFiles: Record<Note, any> = {
     C: require("../../assets/c_piano.wav"),
@@ -249,13 +253,8 @@ const Home: FC = () => {
           Score: <Text style={[styles.score, { color: "red" }]}>{score}</Text>
         </Text>
         <Text style={styles.score}>High Score: {highScore}</Text>
-        <Text style={styles.score}>Attempts: {attempts} / 10</Text>
-        <TouchableOpacity
-          onPress={playNote}
-          disabled={
-            playButtonDisabled || gameEnded || (attempts >= 10 && score < 100)
-          }
-        >
+        <Text style={styles.score}>Attempts: {attempts} / 10+</Text>
+        <TouchableOpacity onPress={playNote} disabled={isPlayDisabled}>
           <Text
             style={{
               color: playButtonDisabled || gameEnded ? "#d3d3d3" : "#007bff",
@@ -266,18 +265,10 @@ const Home: FC = () => {
             Play Note
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={replayNote}
-          disabled={
-            gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed
-          }
-        >
+        <TouchableOpacity onPress={replayNote} disabled={isReplayDisabled}>
           <Text
             style={{
-              color:
-                gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed
-                  ? "#d3d3d3"
-                  : "#007bff",
+              color: isReplayDisabled ? "#d3d3d3" : "#007bff",
               fontFamily: "jersey-regular",
               fontSize: 25,
             }}
