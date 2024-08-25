@@ -1,17 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Button,
-  Modal,
-  StyleSheet,
-  TouchableOpacity,
-  Pressable,
-  ImageBackground,
-  SafeAreaView,
-  useColorScheme,
-  StatusBar,
-} from "react-native";
+import React from "react";
+import { SafeAreaView, useColorScheme, StatusBar } from "react-native";
 import { Provider } from "react-redux";
 import store from "./store";
 import { Colors } from "react-native/Libraries/NewAppScreen";
@@ -37,5 +25,3 @@ export default function App() {
     </Provider>
   );
 }
-
-const styles = StyleSheet.create({});

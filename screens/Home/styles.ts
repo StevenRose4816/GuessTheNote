@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: "jersey-regular",
     fontSize: 60,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   noteContainer: {
     flexDirection: "row",
