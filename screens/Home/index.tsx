@@ -127,7 +127,6 @@ const Home: FC = () => {
   };
 
   const guessNote = (note: Note) => {
-    // Tried to guess without listening to note first
     if (!hasNotePlayed) {
       setModalTitle("Warning");
       setModalMessage("You need to play a note before guessing.");
@@ -135,62 +134,43 @@ const Home: FC = () => {
       return;
     }
 
-    let newScore = score;
-    // Correct guess
-    if (note === selectedNote) {
-      newScore += 10;
-      setScore(newScore);
+    const isCorrectGuess = note === selectedNote;
+    const updatedScore = isCorrectGuess ? score + 10 : score;
+
+    if (isCorrectGuess) {
       setModalTitle("Correct!");
       setModalMessage(
         `You guessed the note ${note.replace("_sharp", "#")} correctly.`
       );
     } else {
-      // Incorrect guess
       setModalTitle("Incorrect");
       setModalMessage(
         `The correct note was ${selectedNote?.replace("_sharp", "#")}.`
       );
-      // User is on turn 10+ and has made an incorrect guess.
-      if (inExtendedPlay) {
-        setGameEnded(true);
-        setModalTitle("Game Over");
-        setModalMessage(
-          `The correct note was ${selectedNote?.replace(
-            "_sharp",
-            "#"
-          )}. Your score is ${score}!`
-        );
-        setModalVisible(true);
-      }
     }
 
+    setScore(updatedScore);
     setAttempts((prevAttempts) => prevAttempts + 1);
     setDisabledNotes(notes);
     setModalVisible(true);
 
-    if (attempts + 1 >= 10) {
-      // User is on 10+ turn and made a correct guess
-      if (newScore >= 100) {
-        if (!inExtendedPlay) {
-          setModalTitle("Congratulations!");
-          setModalMessage(
-            "Perfect score! Keep playing until you make a mistake."
-          );
-          setInExtendedPlay(true);
-        }
-        setPlayButtonDisabled(false);
-        setHasNotePlayed(false);
-        playNote();
-      } else {
-        // Game is over and user has made new high score
-        if (newScore > highScore) {
-          setHighScore(newScore);
-          dispatch(setHighScoreAlias({ highScore: newScore }));
-        }
+    const isFinalAttempt = attempts + 1 >= 10;
+    const isGameOver = !isCorrectGuess && inExtendedPlay;
+
+    if (isFinalAttempt) {
+      if (updatedScore >= 100 && !inExtendedPlay) {
+        setModalTitle("Congratulations!");
+        setModalMessage(
+          "Perfect score! Keep playing until you make a mistake."
+        );
+        setInExtendedPlay(true);
+      } else if (updatedScore > highScore) {
+        setHighScore(updatedScore);
+        dispatch(setHighScoreAlias({ highScore: updatedScore }));
         setModalTitle("Game Over");
         setModalMessage(
-          `Your final score is ${newScore}. ${
-            note === selectedNote
+          `Your final score is ${updatedScore}. ${
+            isCorrectGuess
               ? "You guessed correctly on your last attempt!"
               : `On your last attempt, you guessed ${note?.replace(
                   "_sharp",
@@ -201,11 +181,21 @@ const Home: FC = () => {
                 )}.`
           }`
         );
-        setPlayButtonDisabled(true);
+        setGameEnded(true);
+      } else {
         setGameEnded(true);
       }
+      setPlayButtonDisabled(true);
+    } else if (isGameOver) {
+      setGameEnded(true);
+      setModalTitle("Game Over");
+      setModalMessage(
+        `The correct note was ${selectedNote?.replace(
+          "_sharp",
+          "#"
+        )}. Your score is ${score}!`
+      );
     } else {
-      // On to the next try
       setHasNotePlayed(false);
       setPlayButtonDisabled(false);
       playNote();
