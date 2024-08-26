@@ -5,4 +5,5 @@ export type NavPropAny = NativeStackNavigationProp<any, any>;
 
 export type AppStackParams = {
   [Routes.home]: undefined;
+  [Routes.welcome]: undefined;
 };

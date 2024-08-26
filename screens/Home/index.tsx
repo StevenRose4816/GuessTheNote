@@ -6,13 +6,16 @@ import {
   TouchableOpacity,
   Pressable,
   ImageBackground,
-  ScrollView,
 } from "react-native";
 import { Audio } from "expo-av";
 import styles from "./styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
 import { useFonts } from "expo-font";
+import Routes from "../../navigation/routes";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useAppSelector } from "../../hooks";
 type Note =
   | "C"
   | "C_sharp"
@@ -26,6 +29,7 @@ type Note =
   | "A"
   | "Bb"
   | "B";
+
 const Home: FC = () => {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -47,6 +51,8 @@ const Home: FC = () => {
     "silkscreen-bold": require("../../assets/Silkscreen-Bold.ttf"),
   };
   const [fontsLoaded] = useFonts(fontMap);
+  const navigation = useNavigation<NativeStackNavigationProp<any, any>>();
+  const highScoreRedux = useAppSelector((state) => state.highScore?.highScore);
   const noteFiles: Record<Note, any> = {
     C: require("../../assets/c_piano.wav"),
     C_sharp: require("../../assets/c#_piano.wav"),
@@ -61,6 +67,7 @@ const Home: FC = () => {
     Bb: require("../../assets/bb_piano.wav"),
     B: require("../../assets/b_piano.wav"),
   };
+
   const notes: Note[] = [
     "C",
     "C_sharp",
@@ -75,6 +82,7 @@ const Home: FC = () => {
     "Bb",
     "B",
   ];
+
   const playNote = async () => {
     if (hasNotePlayed) {
       return;
@@ -97,6 +105,7 @@ const Home: FC = () => {
       setModalVisible(true);
     }
   };
+
   const replayNote = async () => {
     if (!selectedNote) {
       setModalTitle("Warning");
@@ -184,18 +193,20 @@ const Home: FC = () => {
         setHasNotePlayed(false);
         playNote();
       } else {
-        // Game is over and user has NOT made new high score
+        // Game is over and user has made new high score
         setModalTitle("Game Over");
         setModalMessage(
-          `Your final score is ${newScore}. ${
+          `Your final score is ${newScore}. You set the new high score! ${
             note === selectedNote
               ? "You guessed correctly on your last attempt!"
               : `On your last attempt, you guessed ${note?.replace(
                   "_sharp",
                   "#"
-                )}.`
+                )} and the answer was ${selectedNote?.replace("_sharp", "#")}.`
           }`
         );
+        setHighScore(newScore);
+        dispatch(setHighScoreAlias({ highScore: newScore }));
         setPlayButtonDisabled(true);
         setGameEnded(true);
       }
@@ -206,11 +217,13 @@ const Home: FC = () => {
       playNote();
     }
   };
+
   const handleNotePress = (note: Note) => {
     if (!disabledNotes.includes(note) && !gameEnded) {
       guessNote(note);
     }
   };
+
   const handleModalClose = () => {
     if (modalTitle === "Incorrect" && gameEnded) {
       setPlayButtonDisabled(true);
@@ -220,6 +233,7 @@ const Home: FC = () => {
     }
     setModalVisible(false);
   };
+
   const restartGame = () => {
     setSelectedNote(null);
     setSound(null);
@@ -232,25 +246,24 @@ const Home: FC = () => {
     setInExtendedPlay(false);
     setGameEnded(false);
   };
+
   return (
     <ImageBackground
       source={require("../../assets/note.png")}
       style={styles.container}
-      imageStyle={{ opacity: 0.1, paddingLeft: 50 }}
+      imageStyle={styles.imageStyle}
     >
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text style={styles.text}>B# or Bb! C?</Text>
+      <View style={styles.contentContainer}>
+        <Text style={styles.text}>B# or Bb!</Text>
         <Text style={styles.score}>
           Score: <Text style={[styles.score, { color: "red" }]}>{score}</Text>
         </Text>
-        <Text style={styles.score}>High Score: {highScore}</Text>
-        <Text style={styles.score}>Attempts: {attempts} / 10</Text>
+        {!highScoreRedux ? (
+          <Text style={styles.score}>High Score: {highScore}</Text>
+        ) : (
+          <Text style={styles.score}>High Score: {highScoreRedux}</Text>
+        )}
+        <Text style={styles.score}>Attempts: {attempts} / 10+</Text>
         <TouchableOpacity
           onPress={playNote}
           disabled={
@@ -304,17 +317,13 @@ const Home: FC = () => {
           ))}
         </View>
         <TouchableOpacity onPress={restartGame}>
-          <Text
-            style={{
-              color: "#ff0000",
-              fontFamily: "jersey-regular",
-              fontSize: 25,
-            }}
-          >
-            Restart Game
-          </Text>
+          <Text style={styles.restartText}>Restart Game</Text>
         </TouchableOpacity>
-      </ScrollView>
+        <TouchableOpacity onPress={() => navigation.navigate(Routes.welcome)}>
+          <Text style={[styles.restartText, { color: "black" }]}>Go back</Text>
+        </TouchableOpacity>
+      </View>
+
       <Modal visible={modalVisible} animationType="slide" transparent={true}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -332,4 +341,5 @@ const Home: FC = () => {
     </ImageBackground>
   );
 };
+
 export default Home;

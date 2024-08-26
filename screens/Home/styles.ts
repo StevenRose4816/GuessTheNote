@@ -1,33 +1,38 @@
 import { StyleSheet, Dimensions } from "react-native";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "#FF6F6150",
     backgroundColor: "#f8f9fa",
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   text: {
     fontFamily: "jersey-regular",
-    fontSize: 60,
-    marginBottom: 10,
+    fontSize: 45,
+    marginBottom: 5,
+    textAlign: "center",
   },
   noteContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 20,
-    width: width * 0.9,
+    marginVertical: 10,
+    width: width * 0.8,
   },
   noteButton: {
     backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    margin: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    margin: 4,
     borderRadius: 5,
     width: width * 0.3,
     alignItems: "center",
@@ -37,13 +42,14 @@ const styles = StyleSheet.create({
   },
   noteButtonText: {
     color: "#fff",
-    fontSize: 30,
+    fontSize: 18,
     fontFamily: "jersey-regular",
   },
   score: {
     fontSize: 25,
-    marginVertical: 5,
+    marginVertical: 3,
     fontFamily: "jersey-regular",
+    textAlign: "center",
   },
   modalContainer: {
     flex: 1,
@@ -59,40 +65,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalTitle: {
-    fontSize: 30,
-    marginBottom: 10,
+    fontSize: 24,
+    marginBottom: 8,
     fontFamily: "jersey-regular",
+    textAlign: "center",
   },
   modalMessage: {
-    fontSize: 25,
+    fontSize: 20,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 15,
     fontFamily: "jersey-regular",
   },
   modalCloseButton: {
     backgroundColor: "#007bff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
     borderRadius: 5,
   },
   modalCloseButtonText: {
     color: "#fff",
-    fontSize: 25,
+    fontSize: 20,
     fontFamily: "jersey-regular",
   },
   restartText: {
     color: "#ff0000",
     fontFamily: "jersey-regular",
     fontSize: 25,
-  },
-  scrollView: {
-    flexGrow: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    textAlign: "center",
   },
   imageStyle: {
     opacity: 0.1,
-    paddingLeft: 50,
   },
 });
 
