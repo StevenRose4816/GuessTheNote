@@ -13,9 +13,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
 import { useFonts } from "expo-font";
 import Routes from "../../navigation/routes";
-import { useNavigation } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useAppSelector } from "../../hooks";
+
 type Note =
   | "C"
   | "C_sharp"
@@ -53,6 +54,24 @@ const Home: FC = () => {
   const [fontsLoaded] = useFonts(fontMap);
   const navigation = useNavigation<NativeStackNavigationProp<any, any>>();
   const highScoreRedux = useAppSelector((state) => state.highScore?.highScore);
+  const route = useRoute<any>();
+  const routeParams = route.params;
+
+  const violinNoteFiles: Record<Note, any> = {
+    C: require("../../assets/C_violin.wav"),
+    C_sharp: require("../../assets/C#_violin.wav"),
+    D: require("../../assets/D_violin.wav"),
+    Eb: require("../../assets/D#_violin.wav"),
+    E: require("../../assets/E_violin.wav"),
+    F: require("../../assets/F_violin.wav"),
+    F_sharp: require("../../assets/F#_violin.wav"),
+    G: require("../../assets/G_violin.wav"),
+    G_sharp: require("../../assets/G#_violin.wav"),
+    A: require("../../assets/A_violin.wav"),
+    Bb: require("../../assets/A#_violin.wav"),
+    B: require("../../assets/B_violin.wav"),
+  };
+
   const noteFiles: Record<Note, any> = {
     C: require("../../assets/c_piano.wav"),
     C_sharp: require("../../assets/c#_piano.wav"),
@@ -83,6 +102,9 @@ const Home: FC = () => {
     "B",
   ];
 
+  const noteFilesFromParam =
+    routeParams?.instrument !== "piano" ? violinNoteFiles : noteFiles;
+
   const playNote = async () => {
     if (hasNotePlayed) {
       return;
@@ -93,7 +115,9 @@ const Home: FC = () => {
     setSelectedNote(randomNote);
     setDisabledNotes([]);
     try {
-      const { sound } = await Audio.Sound.createAsync(noteFiles[randomNote]);
+      const { sound } = await Audio.Sound.createAsync(
+        noteFilesFromParam[randomNote]
+      );
       setSound(sound);
       await sound.playAsync();
       setHasNotePlayed(true);
@@ -114,7 +138,9 @@ const Home: FC = () => {
       return;
     }
     try {
-      const { sound } = await Audio.Sound.createAsync(noteFiles[selectedNote]);
+      const { sound } = await Audio.Sound.createAsync(
+        noteFilesFromParam[selectedNote]
+      );
       setSound(sound);
       await sound.playAsync();
     } catch (error) {
