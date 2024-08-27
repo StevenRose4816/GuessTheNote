@@ -75,7 +75,7 @@ const Home: FC = () => {
   const saxNoteFiles: Record<Note, any> = {
     C: require("../../assets/C_sax.wav"),
     C_sharp: require("../../assets/C#_sax.wav"),
-    D: require("../../assets/D_sax.wav"),
+    D: require("../../assets/D2_sax.wav"),
     Eb: require("../../assets/D#_sax.wav"),
     E: require("../../assets/E_sax.wav"),
     F: require("../../assets/F_sax.wav"),
@@ -306,7 +306,8 @@ const Home: FC = () => {
       <View style={styles.contentContainer}>
         <Text style={styles.text}>B# or Bb!</Text>
         <Text style={styles.score}>
-          Score: <Text style={[styles.score, { color: "red" }]}>{score}</Text>
+          Score:{" "}
+          <Text style={[styles.score, { color: "#FF2D55" }]}>{score}</Text>
         </Text>
         {!highScoreRedux ? (
           <Text style={styles.score}>High Score: {highScore}</Text>

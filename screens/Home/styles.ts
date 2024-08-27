@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     fontFamily: "jersey-regular",
   },
   restartText: {
-    color: "#800020",
+    color: "#FF2D55",
     fontFamily: "jersey-regular",
     fontSize: 25,
     textAlign: "center",
