@@ -72,6 +72,21 @@ const Home: FC = () => {
     B: require("../../assets/B_violin.wav"),
   };
 
+  const saxNoteFiles: Record<Note, any> = {
+    C: require("../../assets/C_sax.wav"),
+    C_sharp: require("../../assets/C#_sax.wav"),
+    D: require("../../assets/D_sax.wav"),
+    Eb: require("../../assets/D#_sax.wav"),
+    E: require("../../assets/E_sax.wav"),
+    F: require("../../assets/F_sax.wav"),
+    F_sharp: require("../../assets/F#_sax.wav"),
+    G: require("../../assets/G_sax.wav"),
+    G_sharp: require("../../assets/G#_sax.wav"),
+    A: require("../../assets/A_sax.wav"),
+    Bb: require("../../assets/Bb_sax.wav"),
+    B: require("../../assets/B_sax.wav"),
+  };
+
   const noteFiles: Record<Note, any> = {
     C: require("../../assets/c_piano.wav"),
     C_sharp: require("../../assets/c#_piano.wav"),
@@ -102,8 +117,17 @@ const Home: FC = () => {
     "B",
   ];
 
-  const noteFilesFromParam =
-    routeParams?.instrument !== "piano" ? violinNoteFiles : noteFiles;
+  const noteFilesFromParam = (() => {
+    switch (routeParams?.instrument) {
+      case "sax":
+        return saxNoteFiles;
+      case "violin":
+        return violinNoteFiles;
+      case "piano":
+      default:
+        return noteFiles;
+    }
+  })();
 
   const playNote = async () => {
     if (hasNotePlayed) {

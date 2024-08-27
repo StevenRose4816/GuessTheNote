@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import Routes from "../../navigation/routes";
 
@@ -16,66 +16,62 @@ const Welcome: FC = () => {
   const { height, width } = Dimensions.get("window");
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#FFF5E170", padding: 20 }}>
+    <View style={{ flex: 1, backgroundColor: "#FF2D55", alignItems: "center" }}>
       <Text
         style={{
           fontSize: 50,
           fontFamily: "jersey-regular",
           marginTop: 20,
-          marginBottom: 40,
-          color: "#1A1F71",
-          textAlign: "center",
+          marginBottom: 10,
         }}
       >
         B# or Bb!
       </Text>
-      <View style={{ alignItems: "flex-start" }}>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate(Routes.home, { instrument: "violin" })
-          }
-          style={{
-            width: width * 0.5,
-            backgroundColor: "#2DFFFF",
-            borderRadius: 5,
-            padding: 10,
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: "jersey-regular",
-              fontSize: 20,
-              color: "#333333",
-              textAlign: "center",
-            }}
-          >
-            Violin
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate(Routes.home, { instrument: "piano" })
-          }
-          style={{
-            width: width * 0.5,
-            backgroundColor: "#2DFFFF",
-            borderRadius: 5,
-            padding: 10,
-            marginTop: 10,
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: "jersey-regular",
-              fontSize: 20,
-              color: "#333333",
-              textAlign: "center",
-            }}
-          >
-            Piano
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate(Routes.home, { instrument: "violin" })
+        }
+        style={{
+          width: width * 0.5,
+          backgroundColor: "white",
+          borderRadius: 5,
+          padding: 5,
+        }}
+      >
+        <Text style={{ textAlign: "center", fontFamily: "jersey-regular" }}>
+          Violin
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate(Routes.home, { instrument: "piano" })
+        }
+        style={{
+          width: width * 0.5,
+          backgroundColor: "white",
+          borderRadius: 5,
+          padding: 5,
+          marginTop: 10,
+        }}
+      >
+        <Text style={{ textAlign: "center", fontFamily: "jersey-regular" }}>
+          Piano
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate(Routes.home, { instrument: "sax" })}
+        style={{
+          width: width * 0.5,
+          backgroundColor: "white",
+          borderRadius: 5,
+          padding: 5,
+          margin: 10,
+        }}
+      >
+        <Text style={{ textAlign: "center", fontFamily: "jersey-regular" }}>
+          Saxophone
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
