@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#FFF5E170",
   },
   contentContainer: {
     flex: 1,
@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     fontSize: 45,
     marginBottom: 5,
     textAlign: "center",
+    color: "#1A1F71",
   },
   noteContainer: {
     flexDirection: "row",
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
     width: width * 0.8,
   },
   noteButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#1A1F71",
     paddingVertical: 8,
     paddingHorizontal: 15,
     margin: 4,
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
     marginVertical: 3,
     fontFamily: "jersey-regular",
     textAlign: "center",
+    color: "#333333",
   },
   modalContainer: {
     flex: 1,
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
     fontFamily: "jersey-regular",
   },
   restartText: {
-    color: "#ff0000",
+    color: "#800020",
     fontFamily: "jersey-regular",
     fontSize: 25,
     textAlign: "center",

@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import { Audio } from "expo-av";
 import styles from "./styles";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
 import { useFonts } from "expo-font";
 import Routes from "../../navigation/routes";
-import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useAppSelector } from "../../hooks";
 
@@ -346,7 +346,9 @@ const Home: FC = () => {
           <Text style={styles.restartText}>Restart Game</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate(Routes.welcome)}>
-          <Text style={[styles.restartText, { color: "black" }]}>Go back</Text>
+          <Text style={[styles.restartText, { color: "#333333" }]}>
+            Go back
+          </Text>
         </TouchableOpacity>
       </View>
 
