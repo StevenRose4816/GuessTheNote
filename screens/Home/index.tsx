@@ -7,7 +7,7 @@ import {
   Pressable,
   ImageBackground,
 } from "react-native";
-import { Audio } from "expo-av";
+import { Audio, AVPlaybackSource } from "expo-av";
 import styles from "./styles";
 import { useDispatch } from "react-redux";
 import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
@@ -57,7 +57,7 @@ const Home: FC = () => {
   const route = useRoute<any>();
   const routeParams = route.params;
 
-  const violinNoteFiles: Record<Note, any> = {
+  const violinNoteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/C_violin.wav"),
     C_sharp: require("../../assets/C#_violin.wav"),
     D: require("../../assets/D_violin.wav"),
@@ -72,8 +72,8 @@ const Home: FC = () => {
     B: require("../../assets/B_violin.wav"),
   };
 
-  const saxNoteFiles: Record<Note, any> = {
-    C: require("../../assets/C_sax.wav"),
+  const saxNoteFiles: Record<Note, AVPlaybackSource> = {
+    C: require("../../assets/C2_sax.wav"),
     C_sharp: require("../../assets/C#_sax.wav"),
     D: require("../../assets/D2_sax.wav"),
     Eb: require("../../assets/D#_sax.wav"),
@@ -87,7 +87,7 @@ const Home: FC = () => {
     B: require("../../assets/B_sax.wav"),
   };
 
-  const noteFiles: Record<Note, any> = {
+  const noteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/c_piano.wav"),
     C_sharp: require("../../assets/c#_piano.wav"),
     D: require("../../assets/d_piano.wav"),
@@ -119,11 +119,11 @@ const Home: FC = () => {
 
   const noteFilesFromParam = (() => {
     switch (routeParams?.instrument) {
-      case "sax":
+      case "Sax":
         return saxNoteFiles;
-      case "violin":
+      case "Violin":
         return violinNoteFiles;
-      case "piano":
+      case "Piano":
       default:
         return noteFiles;
     }
@@ -361,7 +361,12 @@ const Home: FC = () => {
               onPress={() => handleNotePress(note)}
               disabled={disabledNotes.includes(note) || gameEnded}
             >
-              <Text style={styles.noteButtonText}>
+              <Text
+                style={[
+                  styles.noteButtonText,
+                  disabledNotes.includes(note) && styles.disabledNoteButtonText,
+                ]}
+              >
                 {note.replace("_sharp", "#")}
               </Text>
             </TouchableOpacity>
