@@ -9,7 +9,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 48,
+    alignSelf: "center",
+    marginTop: 50,
+    fontSize: 40,
     fontFamily: "jersey-regular",
     color: "#333",
     marginBottom: 40,
@@ -22,11 +24,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    width: Dimensions.get("window").width * 0.6,
+    width: Dimensions.get("window").width * 0.4,
     backgroundColor: "#E0E0E0",
-    borderRadius: 10,
-    paddingVertical: 15,
-    marginVertical: 10,
+    borderRadius: 5,
+    paddingVertical: 10,
+    marginVertical: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
@@ -35,7 +37,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: "silkscreen-regular",
-    fontSize: 20,
+    fontSize: 16,
     color: "#333",
   },
 });

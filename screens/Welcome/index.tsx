@@ -1,5 +1,11 @@
 import React, { FC } from "react";
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  ImageBackground,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
@@ -16,6 +22,7 @@ const Welcome: FC = () => {
   const [fontsLoaded] = useFonts(fontMap);
   const navigation = useNavigation<NativeStackNavigationProp<any, any>>();
   const { width } = Dimensions.get("window");
+  const instruments = ["Violin", "Piano", "Saxophone"];
 
   if (!fontsLoaded) {
     return null;
@@ -27,9 +34,15 @@ const Welcome: FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>B# or Bb!</Text>
+      <ImageBackground
+        source={require("../../assets/watercolor.jpg")}
+        imageStyle={{ opacity: 0.3 }}
+        style={{ minWidth: width, marginBottom: 15 }}
+      >
+        <Text style={styles.title}>B# or Bb!</Text>
+      </ImageBackground>
       <View style={styles.buttonsContainer}>
-        {["Violin", "Piano", "Sax"].map((instrument) => (
+        {instruments.map((instrument) => (
           <TouchableOpacity
             key={instrument}
             onPress={() => navigateToInstrument(instrument)}

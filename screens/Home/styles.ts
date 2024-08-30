@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   imageStyle: {
-    opacity: 0.1,
+    opacity: 0.2,
   },
   playButton: {
     fontSize: 25,

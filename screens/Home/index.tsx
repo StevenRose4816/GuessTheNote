@@ -45,6 +45,7 @@ const Home: FC = () => {
   const [playButtonDisabled, setPlayButtonDisabled] = useState<boolean>(false);
   const [inExtendedPlay, setInExtendedPlay] = useState<boolean>(false);
   const [gameEnded, setGameEnded] = useState<boolean>(false);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
   const dispatch = useDispatch();
   const fontMap = {
     "jersey-regular": require("../../assets/Jersey10-Regular.ttf"),
@@ -119,7 +120,7 @@ const Home: FC = () => {
 
   const noteFilesFromParam = (() => {
     switch (routeParams?.instrument) {
-      case "Sax":
+      case "Saxophone":
         return saxNoteFiles;
       case "Violin":
         return violinNoteFiles;
@@ -130,6 +131,9 @@ const Home: FC = () => {
   })();
 
   const playNote = async () => {
+    if (!gameStarted) {
+      setGameStarted(true);
+    }
     if (hasNotePlayed) {
       return;
     }
@@ -285,6 +289,7 @@ const Home: FC = () => {
   };
 
   const restartGame = () => {
+    setGameStarted(!gameStarted);
     setSelectedNote(null);
     setSound(null);
     setScore(0);
@@ -297,9 +302,22 @@ const Home: FC = () => {
     setGameEnded(false);
   };
 
+  const noteSourceFromParam = (() => {
+    switch (routeParams?.instrument) {
+      case "Saxophone":
+        return require("../../assets/watercolorsax.jpeg");
+      case "Violin":
+        return require("../../assets/watercolorviolin.jpg");
+      case "Piano":
+        return require("../../assets/watercolorpiano2.jpeg");
+      default:
+        return require("../../assets/watercolorpiano2.jpeg");
+    }
+  })();
+
   return (
     <ImageBackground
-      source={require("../../assets/note.png")}
+      source={noteSourceFromParam}
       style={styles.container}
       imageStyle={styles.imageStyle}
     >
@@ -356,15 +374,19 @@ const Home: FC = () => {
               key={note}
               style={[
                 styles.noteButton,
-                disabledNotes.includes(note) && styles.disabledNoteButton,
+                (disabledNotes.includes(note) || !gameStarted) &&
+                  styles.disabledNoteButton,
               ]}
               onPress={() => handleNotePress(note)}
-              disabled={disabledNotes.includes(note) || gameEnded}
+              disabled={
+                disabledNotes.includes(note) || gameEnded || !gameStarted
+              }
             >
               <Text
                 style={[
                   styles.noteButtonText,
-                  disabledNotes.includes(note) && styles.disabledNoteButtonText,
+                  (disabledNotes.includes(note) || !gameStarted) &&
+                    styles.disabledNoteButtonText,
                 ]}
               >
                 {note.replace("_sharp", "#")}
