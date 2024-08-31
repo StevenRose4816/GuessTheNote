@@ -84,7 +84,7 @@ const Home: FC = () => {
     G: require("../../assets/G_sax.wav"),
     G_sharp: require("../../assets/G#_sax.wav"),
     A: require("../../assets/A_sax.wav"),
-    Bb: require("../../assets/Bb_sax.wav"),
+    Bb: require("../../assets/Bb2_sax.wav"),
     B: require("../../assets/B_sax.wav"),
   };
 
@@ -189,10 +189,10 @@ const Home: FC = () => {
     }
 
     let newScore = score;
+
     // Correct guess
     if (note === selectedNote) {
-      newScore += 10;
-      setScore(newScore);
+      setScore(score + 10);
       setModalTitle("Correct!");
       setModalMessage(
         `You guessed the note ${note.replace("_sharp", "#")} correctly.`

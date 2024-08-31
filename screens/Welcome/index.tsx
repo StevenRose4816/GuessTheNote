@@ -1,10 +1,11 @@
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   Dimensions,
   ImageBackground,
+  Animated,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -23,10 +24,20 @@ const Welcome: FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any, any>>();
   const { width } = Dimensions.get("window");
   const instruments = ["Violin", "Piano", "Saxophone"];
+  const translateX = useRef(new Animated.Value(0)).current;
+  const screenWidth = Dimensions.get("window").width;
 
   if (!fontsLoaded) {
     return null;
   }
+
+  const moveImage = () => {
+    Animated.timing(translateX, {
+      toValue: screenWidth * 0.33,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const navigateToInstrument = (instrument: string) => {
     navigation.navigate(Routes.home, { instrument });
