@@ -19,16 +19,16 @@ import { useAppSelector } from "../../hooks";
 
 type Note =
   | "C"
-  | "C_sharp"
-  | "D"
-  | "Eb"
-  | "E"
-  | "F"
-  | "F_sharp"
-  | "G"
-  | "G_sharp"
-  | "A"
-  | "Bb"
+  // | "C_sharp"
+  // | "D"
+  // | "Eb"
+  // | "E"
+  // | "F"
+  // | "F_sharp"
+  // | "G"
+  // | "G_sharp"
+  // | "A"
+  // | "Bb"
   | "B";
 
 const Home: FC = () => {
@@ -58,63 +58,67 @@ const Home: FC = () => {
   const route = useRoute<any>();
   const routeParams = route.params;
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   const violinNoteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/C_violin.wav"),
-    C_sharp: require("../../assets/C#_violin.wav"),
-    D: require("../../assets/D_violin.wav"),
-    Eb: require("../../assets/D#_violin.wav"),
-    E: require("../../assets/E_violin.wav"),
-    F: require("../../assets/F_violin.wav"),
-    F_sharp: require("../../assets/F#_violin.wav"),
-    G: require("../../assets/G_violin.wav"),
-    G_sharp: require("../../assets/G#_violin.wav"),
-    A: require("../../assets/A_violin.wav"),
-    Bb: require("../../assets/A#_violin.wav"),
+    // C_sharp: require("../../assets/C#_violin.wav"),
+    // D: require("../../assets/D_violin.wav"),
+    // Eb: require("../../assets/D#_violin.wav"),
+    // E: require("../../assets/E_violin.wav"),
+    // F: require("../../assets/F_violin.wav"),
+    // F_sharp: require("../../assets/F#_violin.wav"),
+    // G: require("../../assets/G_violin.wav"),
+    // G_sharp: require("../../assets/G#_violin.wav"),
+    // A: require("../../assets/A_violin.wav"),
+    // Bb: require("../../assets/A#_violin.wav"),
     B: require("../../assets/B_violin.wav"),
   };
 
   const saxNoteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/C2_sax.wav"),
-    C_sharp: require("../../assets/C#_sax.wav"),
-    D: require("../../assets/D2_sax.wav"),
-    Eb: require("../../assets/D#_sax.wav"),
-    E: require("../../assets/E_sax.wav"),
-    F: require("../../assets/F_sax.wav"),
-    F_sharp: require("../../assets/F#_sax.wav"),
-    G: require("../../assets/G_sax.wav"),
-    G_sharp: require("../../assets/G#_sax.wav"),
-    A: require("../../assets/A_sax.wav"),
-    Bb: require("../../assets/Bb2_sax.wav"),
+    // C_sharp: require("../../assets/C#2_sax.wav"),
+    // D: require("../../assets/D2_sax.wav"),
+    // Eb: require("../../assets/D#2_sax.wav"),
+    // E: require("../../assets/E_sax.wav"),
+    // F: require("../../assets/F_sax.wav"),
+    // F_sharp: require("../../assets/F#_sax.wav"),
+    // G: require("../../assets/G_sax.wav"),
+    // G_sharp: require("../../assets/G#_sax.wav"),
+    // A: require("../../assets/A_sax.wav"),
+    // Bb: require("../../assets/Bb2_sax.wav"),
     B: require("../../assets/B_sax.wav"),
   };
 
   const noteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/c_piano.wav"),
-    C_sharp: require("../../assets/c#_piano.wav"),
-    D: require("../../assets/d_piano.wav"),
-    Eb: require("../../assets/eb_piano.wav"),
-    E: require("../../assets/e_piano.wav"),
-    F: require("../../assets/f_piano.wav"),
-    F_sharp: require("../../assets/f#_piano.wav"),
-    G: require("../../assets/g_piano.wav"),
-    G_sharp: require("../../assets/g#_piano.wav"),
-    A: require("../../assets/a_piano.wav"),
-    Bb: require("../../assets/bb_piano.wav"),
+    // C_sharp: require("../../assets/c#_piano.wav"),
+    // D: require("../../assets/d_piano.wav"),
+    // Eb: require("../../assets/eb_piano.wav"),
+    // E: require("../../assets/e_piano.wav"),
+    // F: require("../../assets/f_piano.wav"),
+    // F_sharp: require("../../assets/f#_piano.wav"),
+    // G: require("../../assets/g_piano.wav"),
+    // G_sharp: require("../../assets/g#_piano.wav"),
+    // A: require("../../assets/a_piano.wav"),
+    // Bb: require("../../assets/bb_piano.wav"),
     B: require("../../assets/b_piano.wav"),
   };
 
   const notes: Note[] = [
     "C",
-    "C_sharp",
-    "D",
-    "Eb",
-    "E",
-    "F",
-    "F_sharp",
-    "G",
-    "G_sharp",
-    "A",
-    "Bb",
+    // "C_sharp",
+    // "D",
+    // "Eb",
+    // "E",
+    // "F",
+    // "F_sharp",
+    // "G",
+    // "G_sharp",
+    // "A",
+    // "Bb",
     "B",
   ];
 
@@ -180,96 +184,93 @@ const Home: FC = () => {
   };
 
   const guessNote = (note: Note) => {
-    // Tried to guess without listening to note first
     if (!hasNotePlayed) {
-      setModalTitle("Warning");
-      setModalMessage("You need to play a note before guessing.");
-      setModalVisible(true);
+      showModal("Warning", "You need to play a note before guessing.");
       return;
     }
 
-    let newScore = score;
-
-    // Correct guess
     if (note === selectedNote) {
-      setScore(score + 10);
-      setModalTitle("Correct!");
-      setModalMessage(
-        `You guessed the note ${note.replace("_sharp", "#")} correctly.`
-      );
+      handleCorrectGuess();
     } else {
-      // Incorrect guess
-      setModalTitle("Incorrect");
-      setModalMessage(
-        `The correct note was ${selectedNote?.replace("_sharp", "#")}.`
-      );
-      // User is on turn 10+ and has made an incorrect guess.
-      if (inExtendedPlay && score > highScore) {
-        setGameEnded(true);
-        setModalTitle("Game Over");
-        setModalMessage(
-          `The correct note was ${selectedNote?.replace(
-            "_sharp",
-            "#"
-          )}. You set the new high score! Your score is ${score}.`
-        );
-        setHighScore(newScore);
-        dispatch(setHighScoreAlias({ highScore: newScore }));
-        // setModalVisible(true);
-      } else if (inExtendedPlay) {
-        setGameEnded(true);
-        setModalTitle("Game Over");
-        setModalMessage(
-          `The correct note was ${selectedNote?.replace(
-            "_sharp",
-            "#"
-          )}. Your score is ${score}.`
-        );
-      }
-      setModalVisible(true);
+      handleIncorrectGuess();
     }
 
     setAttempts((prevAttempts) => prevAttempts + 1);
     setDisabledNotes(notes);
-    setModalVisible(true);
+  };
 
-    if (attempts + 1 >= 10) {
-      // User is on 10+ turn and made a correct guess
-      if (newScore >= 100) {
-        if (!inExtendedPlay) {
-          setModalTitle("Congratulations!");
-          setModalMessage(
-            "Perfect score! Keep playing until you make a mistake."
-          );
-          setInExtendedPlay(true);
-        }
-        setPlayButtonDisabled(false);
-        setHasNotePlayed(false);
-        playNote();
-      } else {
-        // Game is over and user has made new high score
-        setModalTitle("Game Over");
-        setModalMessage(
-          `Your final score is ${newScore}. You set the new high score! ${
-            note === selectedNote
-              ? "You guessed correctly on your last attempt!"
-              : `On your last attempt, you guessed ${note?.replace(
-                  "_sharp",
-                  "#"
-                )} and the answer was ${selectedNote?.replace("_sharp", "#")}.`
-          }`
-        );
-        setHighScore(newScore);
-        dispatch(setHighScoreAlias({ highScore: newScore }));
-        setPlayButtonDisabled(true);
-        setGameEnded(true);
-      }
+  const handleCorrectGuess = () => {
+    const newScore = score + 10;
+    setScore(newScore);
+
+    if (attempts + 1 > 10 && newScore >= 100) {
+      handlePerfectScore();
     } else {
-      // On to the next try
-      setHasNotePlayed(false);
-      setPlayButtonDisabled(false);
-      playNote();
+      showModal(
+        "Correct!",
+        `You guessed the note ${selectedNote?.replace(
+          "_sharp",
+          "#"
+        )} correctly.`
+      );
+      resetForNextRound();
     }
+  };
+
+  const handleIncorrectGuess = () => {
+    const message = `The correct note was ${selectedNote?.replace(
+      "_sharp",
+      "#"
+    )}.`;
+    const title =
+      inExtendedPlay && score > highScore ? "Game Over" : "Incorrect";
+
+    // this case works fine.
+    if (inExtendedPlay) {
+      setGameEnded(true);
+      const finalMessage =
+        score >= 100
+          ? `You set the new high score! Your score is ${score}.`
+          : `Your score is ${score}.`;
+      showModal(title, `${message} ${finalMessage}`);
+      if (score >= 100) {
+        setHighScore(score);
+        dispatch(setHighScoreAlias({ highScore: score }));
+      }
+    } else if (!inExtendedPlay && attempts + 1 === 10) {
+      // not in inExtendedPlay and attempts === 10 so we set gameEnded to true and show the modal.
+      // the closeModal() contains the logic for ending the game or not.
+      console.log("not in inExtendedPlay and attempts === 10");
+      setGameEnded(true);
+      showModal(title, message);
+      return;
+    } else {
+      // attempts are less than 10
+      console.log("attempts are less than 10");
+      showModal(title, message);
+      resetForNextRound();
+    }
+  };
+
+  const handlePerfectScore = () => {
+    setInExtendedPlay(true);
+    showModal(
+      "Congratulations!",
+      "Perfect score! Keep playing until you make a mistake."
+    );
+    resetForNextRound();
+  };
+
+  const resetForNextRound = () => {
+    setHasNotePlayed(false);
+    setPlayButtonDisabled(false);
+    playNote();
+  };
+
+  const showModal = (title: string, message: string) => {
+    setModalTitle(title);
+    setModalMessage(message);
+    setModalVisible(true);
   };
 
   const handleNotePress = (note: Note) => {
@@ -279,8 +280,16 @@ const Home: FC = () => {
   };
 
   const handleModalClose = () => {
-    if (modalTitle === "Incorrect" && gameEnded) {
-      setPlayButtonDisabled(true);
+    // this is where the problem is when the game ends at 10.
+    console.log("handleModalClose()");
+    if (modalTitle === "Incorrect") {
+      if (gameEnded) {
+        console.log("gameEnded");
+        setPlayButtonDisabled(true);
+      } else {
+        console.log("game NOT Ended");
+        setPlayButtonDisabled(false);
+      }
     } else if (modalTitle === "Correct!") {
       setPlayButtonDisabled(false);
       setHasNotePlayed(false);
@@ -289,7 +298,7 @@ const Home: FC = () => {
   };
 
   const restartGame = () => {
-    setGameStarted(!gameStarted);
+    setGameStarted(false);
     setSelectedNote(null);
     setSound(null);
     setScore(0);

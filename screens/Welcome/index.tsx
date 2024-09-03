@@ -1,4 +1,4 @@
-import React, { FC, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -26,6 +26,19 @@ const Welcome: FC = () => {
   const instruments = ["Violin", "Piano", "Saxophone"];
   const translateX = useRef(new Animated.Value(0)).current;
   const screenWidth = Dimensions.get("window").width;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const fadeIn = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1500,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  useEffect(() => {
+    fadeIn();
+  }, []);
 
   if (!fontsLoaded) {
     return null;
@@ -33,7 +46,7 @@ const Welcome: FC = () => {
 
   const moveImage = () => {
     Animated.timing(translateX, {
-      toValue: screenWidth * 0.33,
+      toValue: screenWidth / 2,
       duration: 1000,
       useNativeDriver: true,
     }).start();
@@ -50,7 +63,9 @@ const Welcome: FC = () => {
         imageStyle={{ opacity: 0.3 }}
         style={{ minWidth: width, marginBottom: 15 }}
       >
-        <Text style={styles.title}>B# or Bb!</Text>
+        <Animated.Text style={[styles.title, { opacity: fadeAnim }]}>
+          B# or Bb!
+        </Animated.Text>
       </ImageBackground>
       <View style={styles.buttonsContainer}>
         {instruments.map((instrument) => (
