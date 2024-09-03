@@ -156,17 +156,13 @@ const Home: FC = () => {
       setPlayButtonDisabled(true);
     } catch (error) {
       console.error("Playback error:", error);
-      setModalTitle("Error");
-      setModalMessage("Failed to play sound.");
-      setModalVisible(true);
+      showModal("Error", "Failed to play sound.");
     }
   };
 
   const replayNote = async () => {
     if (!selectedNote) {
-      setModalTitle("Warning");
-      setModalMessage("Play a note first.");
-      setModalVisible(true);
+      showModal("Warning", "Play a note first.");
       return;
     }
     try {
@@ -177,9 +173,7 @@ const Home: FC = () => {
       await sound.playAsync();
     } catch (error) {
       console.error("Playback error:", error);
-      setModalTitle("Error");
-      setModalMessage("Failed to replay sound.");
-      setModalVisible(true);
+      showModal("Error", "Failed to replay sound.");
     }
   };
 
@@ -244,12 +238,10 @@ const Home: FC = () => {
         dispatch(setHighScoreAlias({ highScore: score }));
       }
     } else if (!inExtendedPlay && attempts + 1 === 10) {
-      console.log("not in inExtendedPlay and attempts === 10");
       setGameEnded(true);
       showModal(title, message);
       return;
     } else {
-      console.log("attempts are less than 10");
       showModal(title, message);
       resetForNextRound();
     }
@@ -283,14 +275,10 @@ const Home: FC = () => {
   };
 
   const handleModalClose = () => {
-    // this is where the problem is when the game ends at 10.
-    console.log("handleModalClose()");
     if (modalTitle === "Incorrect") {
       if (gameEnded) {
-        console.log("gameEnded");
         setPlayButtonDisabled(true);
       } else {
-        console.log("game NOT Ended");
         setPlayButtonDisabled(false);
       }
     } else if (modalTitle === "Correct!") {
