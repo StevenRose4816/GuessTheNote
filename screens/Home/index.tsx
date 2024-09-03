@@ -19,16 +19,16 @@ import { useAppSelector } from "../../hooks";
 
 type Note =
   | "C"
-  // | "C_sharp"
-  // | "D"
-  // | "Eb"
-  // | "E"
-  // | "F"
-  // | "F_sharp"
-  // | "G"
-  // | "G_sharp"
-  // | "A"
-  // | "Bb"
+  | "C_sharp"
+  | "D"
+  | "Eb"
+  | "E"
+  | "F"
+  | "F_sharp"
+  | "G"
+  | "G_sharp"
+  | "A"
+  | "Bb"
   | "B";
 
 const Home: FC = () => {
@@ -64,61 +64,61 @@ const Home: FC = () => {
 
   const violinNoteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/C_violin.wav"),
-    // C_sharp: require("../../assets/C#_violin.wav"),
-    // D: require("../../assets/D_violin.wav"),
-    // Eb: require("../../assets/D#_violin.wav"),
-    // E: require("../../assets/E_violin.wav"),
-    // F: require("../../assets/F_violin.wav"),
-    // F_sharp: require("../../assets/F#_violin.wav"),
-    // G: require("../../assets/G_violin.wav"),
-    // G_sharp: require("../../assets/G#_violin.wav"),
-    // A: require("../../assets/A_violin.wav"),
-    // Bb: require("../../assets/A#_violin.wav"),
+    C_sharp: require("../../assets/C#_violin.wav"),
+    D: require("../../assets/D_violin.wav"),
+    Eb: require("../../assets/D#_violin.wav"),
+    E: require("../../assets/E_violin.wav"),
+    F: require("../../assets/F_violin.wav"),
+    F_sharp: require("../../assets/F#_violin.wav"),
+    G: require("../../assets/G_violin.wav"),
+    G_sharp: require("../../assets/G#_violin.wav"),
+    A: require("../../assets/A_violin.wav"),
+    Bb: require("../../assets/A#_violin.wav"),
     B: require("../../assets/B_violin.wav"),
   };
 
   const saxNoteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/C2_sax.wav"),
-    // C_sharp: require("../../assets/C#2_sax.wav"),
-    // D: require("../../assets/D2_sax.wav"),
-    // Eb: require("../../assets/D#2_sax.wav"),
-    // E: require("../../assets/E_sax.wav"),
-    // F: require("../../assets/F_sax.wav"),
-    // F_sharp: require("../../assets/F#_sax.wav"),
-    // G: require("../../assets/G_sax.wav"),
-    // G_sharp: require("../../assets/G#_sax.wav"),
-    // A: require("../../assets/A_sax.wav"),
-    // Bb: require("../../assets/Bb2_sax.wav"),
+    C_sharp: require("../../assets/C#2_sax.wav"),
+    D: require("../../assets/D2_sax.wav"),
+    Eb: require("../../assets/D#2_sax.wav"),
+    E: require("../../assets/E_sax.wav"),
+    F: require("../../assets/F_sax.wav"),
+    F_sharp: require("../../assets/F#_sax.wav"),
+    G: require("../../assets/G_sax.wav"),
+    G_sharp: require("../../assets/G#_sax.wav"),
+    A: require("../../assets/A_sax.wav"),
+    Bb: require("../../assets/Bb2_sax.wav"),
     B: require("../../assets/B_sax.wav"),
   };
 
   const noteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/c_piano.wav"),
-    // C_sharp: require("../../assets/c#_piano.wav"),
-    // D: require("../../assets/d_piano.wav"),
-    // Eb: require("../../assets/eb_piano.wav"),
-    // E: require("../../assets/e_piano.wav"),
-    // F: require("../../assets/f_piano.wav"),
-    // F_sharp: require("../../assets/f#_piano.wav"),
-    // G: require("../../assets/g_piano.wav"),
-    // G_sharp: require("../../assets/g#_piano.wav"),
-    // A: require("../../assets/a_piano.wav"),
-    // Bb: require("../../assets/bb_piano.wav"),
+    C_sharp: require("../../assets/c#_piano.wav"),
+    D: require("../../assets/d_piano.wav"),
+    Eb: require("../../assets/eb_piano.wav"),
+    E: require("../../assets/e_piano.wav"),
+    F: require("../../assets/f_piano.wav"),
+    F_sharp: require("../../assets/f#_piano.wav"),
+    G: require("../../assets/g_piano.wav"),
+    G_sharp: require("../../assets/g#_piano.wav"),
+    A: require("../../assets/a_piano.wav"),
+    Bb: require("../../assets/bb_piano.wav"),
     B: require("../../assets/b_piano.wav"),
   };
 
   const notes: Note[] = [
     "C",
-    // "C_sharp",
-    // "D",
-    // "Eb",
-    // "E",
-    // "F",
-    // "F_sharp",
-    // "G",
-    // "G_sharp",
-    // "A",
-    // "Bb",
+    "C_sharp",
+    "D",
+    "Eb",
+    "E",
+    "F",
+    "F_sharp",
+    "G",
+    "G_sharp",
+    "A",
+    "Bb",
     "B",
   ];
 
@@ -217,15 +217,21 @@ const Home: FC = () => {
     }
   };
 
+  const displayTitle = () => {
+    if (inExtendedPlay || attempts + 1 >= 10) {
+      return "Game Over";
+    }
+    return "Incorrect";
+  };
+
   const handleIncorrectGuess = () => {
     const message = `The correct note was ${selectedNote?.replace(
       "_sharp",
       "#"
     )}.`;
-    const title =
-      inExtendedPlay && score > highScore ? "Game Over" : "Incorrect";
 
-    // this case works fine.
+    const title = displayTitle();
+
     if (inExtendedPlay) {
       setGameEnded(true);
       const finalMessage =
@@ -238,14 +244,11 @@ const Home: FC = () => {
         dispatch(setHighScoreAlias({ highScore: score }));
       }
     } else if (!inExtendedPlay && attempts + 1 === 10) {
-      // not in inExtendedPlay and attempts === 10 so we set gameEnded to true and show the modal.
-      // the closeModal() contains the logic for ending the game or not.
       console.log("not in inExtendedPlay and attempts === 10");
       setGameEnded(true);
       showModal(title, message);
       return;
     } else {
-      // attempts are less than 10
       console.log("attempts are less than 10");
       showModal(title, message);
       resetForNextRound();
