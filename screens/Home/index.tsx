@@ -19,16 +19,16 @@ import { useAppSelector } from "../../hooks";
 
 type Note =
   | "C"
-  | "C_sharp"
-  | "D"
-  | "Eb"
-  | "E"
-  | "F"
-  | "F_sharp"
-  | "G"
-  | "G_sharp"
-  | "A"
-  | "Bb"
+  // | "C_sharp"
+  // | "D"
+  // | "Eb"
+  // | "E"
+  // | "F"
+  // | "F_sharp"
+  // | "G"
+  // | "G_sharp"
+  // | "A"
+  // | "Bb"
   | "B";
 
 const Home: FC = () => {
@@ -38,14 +38,13 @@ const Home: FC = () => {
   const [attempts, setAttempts] = useState<number>(0);
   const [highScore, setHighScore] = useState<number>(0);
   const [disabledNotes, setDisabledNotes] = useState<Note[]>([]);
-  const [hasNotePlayed, setHasNotePlayed] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [modalMessage, setModalMessage] = useState<string>("");
   const [modalTitle, setModalTitle] = useState<string>("");
   const [playButtonDisabled, setPlayButtonDisabled] = useState<boolean>(false);
-  const [inExtendedPlay, setInExtendedPlay] = useState<boolean>(false);
-  const [gameEnded, setGameEnded] = useState<boolean>(false);
-  const [gameStarted, setGameStarted] = useState<boolean>(false);
+  const [replayButtonDisabled, setReplayButtonDisabled] =
+    useState<boolean>(false);
+
   const dispatch = useDispatch();
   const fontMap = {
     "jersey-regular": require("../../assets/Jersey10-Regular.ttf"),
@@ -64,61 +63,61 @@ const Home: FC = () => {
 
   const violinNoteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/C_violin.wav"),
-    C_sharp: require("../../assets/C#_violin.wav"),
-    D: require("../../assets/D_violin.wav"),
-    Eb: require("../../assets/D#_violin.wav"),
-    E: require("../../assets/E_violin.wav"),
-    F: require("../../assets/F_violin.wav"),
-    F_sharp: require("../../assets/F#_violin.wav"),
-    G: require("../../assets/G_violin.wav"),
-    G_sharp: require("../../assets/G#_violin.wav"),
-    A: require("../../assets/A_violin.wav"),
-    Bb: require("../../assets/A#_violin.wav"),
+    // C_sharp: require("../../assets/C#_violin.wav"),
+    // D: require("../../assets/D_violin.wav"),
+    // Eb: require("../../assets/D#_violin.wav"),
+    // E: require("../../assets/E_violin.wav"),
+    // F: require("../../assets/F_violin.wav"),
+    // F_sharp: require("../../assets/F#_violin.wav"),
+    // G: require("../../assets/G_violin.wav"),
+    // G_sharp: require("../../assets/G#_violin.wav"),
+    // A: require("../../assets/A_violin.wav"),
+    // Bb: require("../../assets/A#_violin.wav"),
     B: require("../../assets/B_violin.wav"),
   };
 
   const saxNoteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/C2_sax.wav"),
-    C_sharp: require("../../assets/C#2_sax.wav"),
-    D: require("../../assets/D2_sax.wav"),
-    Eb: require("../../assets/D#2_sax.wav"),
-    E: require("../../assets/E_sax.wav"),
-    F: require("../../assets/F_sax.wav"),
-    F_sharp: require("../../assets/F#_sax.wav"),
-    G: require("../../assets/G_sax.wav"),
-    G_sharp: require("../../assets/G#_sax.wav"),
-    A: require("../../assets/A_sax.wav"),
-    Bb: require("../../assets/Bb2_sax.wav"),
+    // C_sharp: require("../../assets/C#2_sax.wav"),
+    // D: require("../../assets/D2_sax.wav"),
+    // Eb: require("../../assets/D#2_sax.wav"),
+    // E: require("../../assets/E_sax.wav"),
+    // F: require("../../assets/F_sax.wav"),
+    // F_sharp: require("../../assets/F#_sax.wav"),
+    // G: require("../../assets/G_sax.wav"),
+    // G_sharp: require("../../assets/G#_sax.wav"),
+    // A: require("../../assets/A_sax.wav"),
+    // Bb: require("../../assets/Bb2_sax.wav"),
     B: require("../../assets/B_sax.wav"),
   };
 
   const noteFiles: Record<Note, AVPlaybackSource> = {
     C: require("../../assets/c_piano.wav"),
-    C_sharp: require("../../assets/c#_piano.wav"),
-    D: require("../../assets/d_piano.wav"),
-    Eb: require("../../assets/eb_piano.wav"),
-    E: require("../../assets/e_piano.wav"),
-    F: require("../../assets/f_piano.wav"),
-    F_sharp: require("../../assets/f#_piano.wav"),
-    G: require("../../assets/g_piano.wav"),
-    G_sharp: require("../../assets/g#_piano.wav"),
-    A: require("../../assets/a_piano.wav"),
-    Bb: require("../../assets/bb_piano.wav"),
+    // C_sharp: require("../../assets/c#_piano.wav"),
+    // D: require("../../assets/d_piano.wav"),
+    // Eb: require("../../assets/eb_piano.wav"),
+    // E: require("../../assets/e_piano.wav"),
+    // F: require("../../assets/f_piano.wav"),
+    // F_sharp: require("../../assets/f#_piano.wav"),
+    // G: require("../../assets/g_piano.wav"),
+    // G_sharp: require("../../assets/g#_piano.wav"),
+    // A: require("../../assets/a_piano.wav"),
+    // Bb: require("../../assets/bb_piano.wav"),
     B: require("../../assets/b_piano.wav"),
   };
 
   const notes: Note[] = [
     "C",
-    "C_sharp",
-    "D",
-    "Eb",
-    "E",
-    "F",
-    "F_sharp",
-    "G",
-    "G_sharp",
-    "A",
-    "Bb",
+    // "C_sharp",
+    // "D",
+    // "Eb",
+    // "E",
+    // "F",
+    // "F_sharp",
+    // "G",
+    // "G_sharp",
+    // "A",
+    // "Bb",
     "B",
   ];
 
@@ -135,25 +134,19 @@ const Home: FC = () => {
   })();
 
   const playNote = async () => {
-    if (!gameStarted) {
-      setGameStarted(true);
-    }
-    if (hasNotePlayed) {
-      return;
-    }
     const availableNotes = notes.filter((note) => note !== selectedNote);
     const randomNote =
       availableNotes[Math.floor(Math.random() * availableNotes.length)];
     setSelectedNote(randomNote);
     setDisabledNotes([]);
+    setPlayButtonDisabled(true);
+
     try {
       const { sound } = await Audio.Sound.createAsync(
         noteFilesFromParam[randomNote]
       );
       setSound(sound);
       await sound.playAsync();
-      setHasNotePlayed(true);
-      setPlayButtonDisabled(true);
     } catch (error) {
       console.error("Playback error:", error);
       showModal("Error", "Failed to play sound.");
@@ -178,11 +171,6 @@ const Home: FC = () => {
   };
 
   const guessNote = (note: Note) => {
-    if (!hasNotePlayed) {
-      showModal("Warning", "You need to play a note before guessing.");
-      return;
-    }
-
     if (note === selectedNote) {
       handleCorrectGuess();
     } else {
@@ -194,12 +182,17 @@ const Home: FC = () => {
   };
 
   const handleCorrectGuess = () => {
+    console.log("attempts: ", attempts);
     const newScore = score + 10;
     setScore(newScore);
 
-    if (attempts + 1 > 10 && newScore >= 100) {
+    const gameExtended = attempts + 1 >= 10 && newScore >= 100;
+    const gameOver = attempts + 1 >= 10 && newScore < 100;
+
+    if (gameExtended) {
+      console.log("game is extended, calling handlePerfectScore()");
       handlePerfectScore();
-    } else {
+    } else if (!gameOver) {
       showModal(
         "Correct!",
         `You guessed the note ${selectedNote?.replace(
@@ -207,48 +200,57 @@ const Home: FC = () => {
           "#"
         )} correctly.`
       );
-      resetForNextRound();
+    } else if (gameOver && newScore < highScore) {
+      showModal(
+        "Game Over!",
+        `You guessed the note ${selectedNote?.replace(
+          "_sharp",
+          "#"
+        )} correctly.`
+      );
+    } else if (gameOver && newScore > highScore) {
+      setHighScore(score);
+      dispatch(setHighScoreAlias({ highScore: newScore }));
+      showModal(
+        "Game Over!",
+        `You set the new high score! Your score is ${newScore}.`
+      );
     }
-  };
-
-  const displayTitle = () => {
-    if (inExtendedPlay || attempts + 1 >= 10) {
-      return "Game Over";
-    }
-    return "Incorrect";
+    setDisabledNotes(notes);
   };
 
   const handleIncorrectGuess = () => {
+    // attempts start at 0
     const message = `The correct note was ${selectedNote?.replace(
       "_sharp",
       "#"
     )}.`;
 
-    const title = displayTitle();
+    const title = attempts + 1 >= 10 ? "Game Over" : "Incorrect";
 
-    if (inExtendedPlay) {
-      setGameEnded(true);
+    const gameOver = attempts + 1 >= 10 && score < 100;
+    const gameOverExtended = attempts + 1 >= 10 && score >= 100;
+
+    console.log("score: ", score);
+    console.log("attempts: ", attempts);
+    console.log("gameover", gameOver);
+    if (gameOver || gameOverExtended) {
       const finalMessage =
-        score >= 100
+        score > highScore
           ? `You set the new high score! Your score is ${score}.`
           : `Your score is ${score}.`;
       showModal(title, `${message} ${finalMessage}`);
-      if (score >= 100) {
+      if (score > highScore) {
         setHighScore(score);
         dispatch(setHighScoreAlias({ highScore: score }));
       }
-    } else if (!inExtendedPlay && attempts + 1 === 10) {
-      setGameEnded(true);
-      showModal(title, message);
-      return;
     } else {
       showModal(title, message);
-      resetForNextRound();
     }
+    setDisabledNotes(notes);
   };
 
   const handlePerfectScore = () => {
-    setInExtendedPlay(true);
     showModal(
       "Congratulations!",
       "Perfect score! Keep playing until you make a mistake."
@@ -257,9 +259,9 @@ const Home: FC = () => {
   };
 
   const resetForNextRound = () => {
-    setHasNotePlayed(false);
     setPlayButtonDisabled(false);
-    playNote();
+    setDisabledNotes([]);
+    setSelectedNote(null);
   };
 
   const showModal = (title: string, message: string) => {
@@ -269,37 +271,36 @@ const Home: FC = () => {
   };
 
   const handleNotePress = (note: Note) => {
-    if (!disabledNotes.includes(note) && !gameEnded) {
+    if (!disabledNotes.includes(note)) {
       guessNote(note);
     }
   };
 
   const handleModalClose = () => {
-    if (modalTitle === "Incorrect") {
-      if (gameEnded) {
-        setPlayButtonDisabled(true);
-      } else {
-        setPlayButtonDisabled(false);
-      }
-    } else if (modalTitle === "Correct!") {
+    if (
+      (modalTitle === "Incorrect" || modalTitle === "Game Over") &&
+      attempts >= 10
+    ) {
+      setPlayButtonDisabled(true);
+      setReplayButtonDisabled(true);
+    } else if (
+      modalTitle === "Correct!" ||
+      modalTitle === "Congratulations!" ||
+      attempts <= 10
+    ) {
       setPlayButtonDisabled(false);
-      setHasNotePlayed(false);
     }
     setModalVisible(false);
   };
 
   const restartGame = () => {
-    setGameStarted(false);
     setSelectedNote(null);
     setSound(null);
     setScore(0);
     setAttempts(0);
     setDisabledNotes([]);
-    setHasNotePlayed(false);
     setModalVisible(false);
     setPlayButtonDisabled(false);
-    setInExtendedPlay(false);
-    setGameEnded(false);
   };
 
   const noteSourceFromParam = (() => {
@@ -333,15 +334,10 @@ const Home: FC = () => {
           <Text style={styles.score}>High Score: {highScoreRedux}</Text>
         )}
         <Text style={styles.score}>Attempts: {attempts} / 10+</Text>
-        <TouchableOpacity
-          onPress={playNote}
-          disabled={
-            playButtonDisabled || gameEnded || (attempts >= 10 && score < 100)
-          }
-        >
+        <TouchableOpacity onPress={playNote} disabled={playButtonDisabled}>
           <Text
             style={{
-              color: playButtonDisabled || gameEnded ? "#d3d3d3" : "#007bff",
+              color: playButtonDisabled ? "#d3d3d3" : "#007bff",
               fontFamily: "jersey-regular",
               fontSize: 25,
             }}
@@ -349,18 +345,10 @@ const Home: FC = () => {
             Play Note
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={replayNote}
-          disabled={
-            gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed
-          }
-        >
+        <TouchableOpacity onPress={replayNote} disabled={replayButtonDisabled}>
           <Text
             style={{
-              color:
-                gameEnded || (attempts >= 10 && score < 100) || !hasNotePlayed
-                  ? "#d3d3d3"
-                  : "#007bff",
+              color: replayButtonDisabled ? "#d3d3d3" : "#007bff",
               fontFamily: "jersey-regular",
               fontSize: 25,
             }}
@@ -374,19 +362,15 @@ const Home: FC = () => {
               key={note}
               style={[
                 styles.noteButton,
-                (disabledNotes.includes(note) || !gameStarted) &&
-                  styles.disabledNoteButton,
+                disabledNotes.includes(note) && styles.disabledNoteButton,
               ]}
               onPress={() => handleNotePress(note)}
-              disabled={
-                disabledNotes.includes(note) || gameEnded || !gameStarted
-              }
+              disabled={disabledNotes.includes(note)}
             >
               <Text
                 style={[
                   styles.noteButtonText,
-                  (disabledNotes.includes(note) || !gameStarted) &&
-                    styles.disabledNoteButtonText,
+                  disabledNotes.includes(note) && styles.disabledNoteButtonText,
                 ]}
               >
                 {note.replace("_sharp", "#")}
