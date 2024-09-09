@@ -7,7 +7,7 @@ import {
   Pressable,
   ImageBackground,
 } from "react-native";
-import { Audio, AVPlaybackSource } from "expo-av";
+import { Audio, AVPlaybackSource, AVPlaybackStatus } from "expo-av";
 import styles from "./styles";
 import { useDispatch } from "react-redux";
 import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
@@ -43,7 +43,7 @@ const Home: FC = () => {
   const [modalTitle, setModalTitle] = useState<string>("");
   const [playButtonDisabled, setPlayButtonDisabled] = useState<boolean>(false);
   const [replayButtonDisabled, setReplayButtonDisabled] =
-    useState<boolean>(false);
+    useState<boolean>(true);
 
   const dispatch = useDispatch();
   const fontMap = {
@@ -140,12 +140,26 @@ const Home: FC = () => {
     setSelectedNote(randomNote);
     setDisabledNotes([]);
     setPlayButtonDisabled(true);
-
     try {
       const { sound } = await Audio.Sound.createAsync(
         noteFilesFromParam[randomNote]
       );
       setSound(sound);
+
+      const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+        if (status.isLoaded) {
+          if (status.isPlaying) {
+            setReplayButtonDisabled(true);
+          } else {
+            setReplayButtonDisabled(false);
+          }
+          if (!status.isBuffering && !status.isPlaying) {
+            // setPlayButtonDisabled(false);
+          }
+        }
+      };
+
+      sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       await sound.playAsync();
     } catch (error) {
       console.error("Playback error:", error);
@@ -163,6 +177,21 @@ const Home: FC = () => {
         noteFilesFromParam[selectedNote]
       );
       setSound(sound);
+      setPlayButtonDisabled(true);
+      const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+        if (status.isLoaded) {
+          if (status.isPlaying) {
+            setReplayButtonDisabled(true);
+          } else {
+            setReplayButtonDisabled(false);
+          }
+          if (!status.isBuffering && !status.isPlaying) {
+            // setPlayButtonDisabled(false);
+          }
+        }
+      };
+
+      sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       await sound.playAsync();
     } catch (error) {
       console.error("Playback error:", error);
@@ -271,17 +300,15 @@ const Home: FC = () => {
   };
 
   const handleModalClose = () => {
-    if (
-      (modalTitle === "Incorrect" || modalTitle === "Game Over") &&
-      attempts >= 10
-    ) {
+    console.log("replayDisabled: ", replayButtonDisabled);
+    console.log("playDisabled: ", playButtonDisabled);
+    const gameOver = attempts === 10 && score < 100;
+    const inExtendedPlay = attempts >= 10 && score >= 100;
+    if (gameOver && !inExtendedPlay) {
       setPlayButtonDisabled(true);
       setReplayButtonDisabled(true);
-    } else if (
-      modalTitle === "Correct!" ||
-      modalTitle === "Congratulations!" ||
-      attempts <= 10
-    ) {
+    } else {
+      setReplayButtonDisabled(true);
       setPlayButtonDisabled(false);
     }
     setModalVisible(false);
@@ -295,6 +322,7 @@ const Home: FC = () => {
     setDisabledNotes([]);
     setModalVisible(false);
     setPlayButtonDisabled(false);
+    setReplayButtonDisabled(true);
   };
 
   const noteSourceFromParam = (() => {
@@ -356,15 +384,17 @@ const Home: FC = () => {
               key={note}
               style={[
                 styles.noteButton,
-                disabledNotes.includes(note) && styles.disabledNoteButton,
+                (disabledNotes.includes(note) || replayButtonDisabled) &&
+                  styles.disabledNoteButton,
               ]}
               onPress={() => handleNotePress(note)}
-              disabled={disabledNotes.includes(note)}
+              disabled={disabledNotes.includes(note) || replayButtonDisabled}
             >
               <Text
                 style={[
                   styles.noteButtonText,
-                  disabledNotes.includes(note) && styles.disabledNoteButtonText,
+                  (disabledNotes.includes(note) || replayButtonDisabled) &&
+                    styles.disabledNoteButtonText,
                 ]}
               >
                 {note.replace("_sharp", "#")}
