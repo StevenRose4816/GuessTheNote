@@ -357,7 +357,7 @@ const Home: FC = () => {
         <TouchableOpacity onPress={playNote} disabled={playButtonDisabled}>
           <Text
             style={{
-              color: playButtonDisabled ? "#d3d3d3" : "#007bff",
+              color: playButtonDisabled ? "#007bff50" : "#007bff",
               fontFamily: "jersey-regular",
               fontSize: 25,
             }}
@@ -368,7 +368,7 @@ const Home: FC = () => {
         <TouchableOpacity onPress={replayNote} disabled={replayButtonDisabled}>
           <Text
             style={{
-              color: replayButtonDisabled ? "#d3d3d3" : "#007bff",
+              color: replayButtonDisabled ? "#007bff50" : "#007bff",
               fontFamily: "jersey-regular",
               fontSize: 25,
             }}
