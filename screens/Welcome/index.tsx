@@ -36,7 +36,7 @@ const Welcome: FC = () => {
   ).current;
 
   const buttonAnimationsY = useRef(
-    instruments.map(() => new Animated.Value(0)) // want to keep at current position initially
+    instruments.map(() => new Animated.Value(0))
   ).current;
 
   const fadeIn = (callback: () => void) => {
@@ -61,16 +61,38 @@ const Welcome: FC = () => {
   };
 
   const slideOutButtons = (instrument: string) => {
-    Animated.stagger(
-      200,
-      buttonAnimationsY.map((animation) => {
-        return Animated.timing(animation, {
-          toValue: screenHeight,
-          duration: 500,
-          useNativeDriver: true,
-        });
+    const selectedIndex = instruments.indexOf(instrument);
+    const selectedButtonAnimation = Animated.timing(
+      buttonAnimationsY[selectedIndex],
+      {
+        toValue: screenHeight,
+        duration: 200,
+        useNativeDriver: true,
+      }
+    );
+
+    const otherButtonsAnimations = buttonAnimationsY
+      .map((animation, index) => {
+        if (index !== selectedIndex) {
+          return Animated.timing(animation, {
+            toValue: screenHeight,
+            duration: 500,
+            useNativeDriver: true,
+          });
+        }
+        return null; // return null for the selected button and then filter it out
       })
-    ).start(() => {
+      .filter((animation) => animation !== null);
+
+    const staggeredOtherButtonsAnimations = Animated.stagger(
+      200, // delay between animations
+      otherButtonsAnimations
+    );
+
+    Animated.sequence([
+      selectedButtonAnimation,
+      staggeredOtherButtonsAnimations,
+    ]).start(() => {
       if (instrument) {
         navigation.navigate(Routes.home, { instrument });
       }
@@ -79,7 +101,6 @@ const Welcome: FC = () => {
 
   useEffect(() => {
     if (fontsLoaded && isFocused) {
-      // reset all animations when the screen is focused, (navigating back focuses)
       buttonAnimationsX.filter((animation) => animation.setValue(-screenWidth));
       buttonAnimationsY.filter((animation) => animation.setValue(0));
       fadeAnim.setValue(0);
@@ -95,10 +116,10 @@ const Welcome: FC = () => {
 
   useEffect(() => {
     if (instrumentPressed !== null) {
-      // reset the position of buttons before sliding out
+      // reset positions before sliding out
       buttonAnimationsY.filter((animation) => animation.setValue(0));
       slideOutButtons(instrumentPressed);
-      setInstrumentPressed(null); // rseset the instrumentPressed state to avoid repeated triggers
+      setInstrumentPressed(null);
     }
   }, [instrumentPressed]);
 
