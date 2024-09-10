@@ -24,33 +24,47 @@ const Welcome: FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any, any>>();
   const { width } = Dimensions.get("window");
   const instruments = ["Violin", "Piano", "Saxophone"];
-  const translateX = useRef(new Animated.Value(0)).current;
   const screenWidth = Dimensions.get("window").width;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const fadeIn = () => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  // setting the animated value to -screenwidth will start off screen (left of screen)
+  const buttonAnimations = useRef(
+    instruments.map(() => new Animated.Value(-screenWidth))
+  ).current;
+
+  const fadeIn = (callback: () => void) => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 1500,
       useNativeDriver: true,
-    }).start();
+    }).start(callback);
+  };
+
+  const slideInButtons = () => {
+    Animated.stagger(
+      200, // Delay between each button's animation start
+      buttonAnimations.map((animation, index) => {
+        return Animated.timing(animation, {
+          toValue: screenWidth * 0.01,
+          duration: 500,
+          useNativeDriver: true,
+          // delay: index * 300,
+        });
+      })
+    ).start();
   };
 
   useEffect(() => {
-    fadeIn();
-  }, []);
+    if (fontsLoaded) {
+      fadeIn(() => {
+        slideInButtons();
+      });
+    }
+  }, [fontsLoaded]);
 
   if (!fontsLoaded) {
     return null;
   }
-
-  const moveImage = () => {
-    Animated.timing(translateX, {
-      toValue: screenWidth / 2,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  };
 
   const navigateToInstrument = (instrument: string) => {
     navigation.navigate(Routes.home, { instrument });
@@ -68,14 +82,20 @@ const Welcome: FC = () => {
         </Animated.Text>
       </ImageBackground>
       <View style={styles.buttonsContainer}>
-        {instruments.map((instrument) => (
-          <TouchableOpacity
+        {instruments.map((instrument, index) => (
+          <Animated.View
             key={instrument}
-            onPress={() => navigateToInstrument(instrument)}
-            style={styles.button}
+            style={{
+              transform: [{ translateX: buttonAnimations[index] }],
+            }}
           >
-            <Text style={styles.buttonText}>{instrument}</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigateToInstrument(instrument)}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>{instrument}</Text>
+            </TouchableOpacity>
+          </Animated.View>
         ))}
       </View>
     </View>

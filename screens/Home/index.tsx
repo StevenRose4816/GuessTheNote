@@ -149,7 +149,7 @@ const Home: FC = () => {
       );
       console.log("Sound object:", sound);
       setSound(sound);
-      await sound.playAsync(); // Ensure sound starts playing
+      await sound.playAsync();
     } catch (error) {
       console.error("Playback error:", error);
       showModal("Error", "Failed to play sound.");
@@ -160,7 +160,6 @@ const Home: FC = () => {
     if (sound) {
       const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
         if (status.isLoaded) {
-          console.log("Playback status:", status);
           if (status.isPlaying) {
             setReplayButtonDisabled(true);
           } else if (!status.isBuffering && !status.isPlaying) {
@@ -168,9 +167,7 @@ const Home: FC = () => {
           }
         }
       };
-
       sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-
       return () => {
         // cleaning listener
         sound.setOnPlaybackStatusUpdate(null);
