@@ -78,7 +78,8 @@ const Welcome: FC = () => {
   };
 
   useEffect(() => {
-    if (isFocused) {
+    if (fontsLoaded && isFocused) {
+      console.log("here 1");
       // reset all animations when the screen is focused, (navigating back focuses)
       buttonAnimationsOnEnter.filter((animation) =>
         animation.setValue(-screenWidth)
@@ -93,6 +94,7 @@ const Welcome: FC = () => {
 
   useEffect(() => {
     if (fontsLoaded) {
+      console.log("here2");
       fadeIn(() => {
         slideInButtons();
       });
