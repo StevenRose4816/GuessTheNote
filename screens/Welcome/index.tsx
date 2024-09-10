@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   ImageBackground,
   Animated,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
 import Routes from "../../navigation/routes";
@@ -19,41 +19,77 @@ const Welcome: FC = () => {
     "silkscreen-regular": require("../../assets/Silkscreen-Regular.ttf"),
     "silkscreen-bold": require("../../assets/Silkscreen-Bold.ttf"),
   };
-
+  const isFocused = useIsFocused();
   const [fontsLoaded] = useFonts(fontMap);
   const navigation = useNavigation<NativeStackNavigationProp<any, any>>();
   const { width } = Dimensions.get("window");
   const instruments = ["Violin", "Piano", "Saxophone"];
   const screenWidth = Dimensions.get("window").width;
-
+  const screenHeight = Dimensions.get("window").height;
+  const [instrumentPressed, setInstrumentPressed] = useState<string | null>(
+    null
+  );
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  // setting the animated value to -screenwidth will start off screen (left of screen)
-  const buttonAnimations = useRef(
+
+  const buttonAnimationsOnEnter = useRef(
     instruments.map(() => new Animated.Value(-screenWidth))
   ).current;
 
-  // this is how we set up funcs to be called after another executes
+  const buttonAnimationsOnExit = useRef(
+    instruments.map(() => new Animated.Value(0)) // want to keep at current position initially
+  ).current;
+
   const fadeIn = (callback: () => void) => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 1200,
+      duration: 1000,
       useNativeDriver: true,
     }).start(callback);
   };
 
   const slideInButtons = () => {
     Animated.stagger(
-      300, // delay between each button's animation start
-      buttonAnimations.map((animation, index) => {
+      300,
+      buttonAnimationsOnEnter.map((animation) => {
         return Animated.timing(animation, {
-          toValue: screenWidth * 0.01,
+          toValue: 0,
           duration: 500,
           useNativeDriver: true,
-          // delay: index * 300,
         });
       })
     ).start();
   };
+
+  const slideOutButtons = (instrument: string) => {
+    Animated.stagger(
+      300,
+      buttonAnimationsOnExit.map((animation) => {
+        return Animated.timing(animation, {
+          toValue: screenHeight,
+          duration: 500,
+          useNativeDriver: true,
+        });
+      })
+    ).start(() => {
+      if (instrument) {
+        navigation.navigate(Routes.home, { instrument });
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      // reset all animations when the screen is focused, (navigating back focuses)
+      buttonAnimationsOnEnter.filter((animation) =>
+        animation.setValue(-screenWidth)
+      );
+      buttonAnimationsOnExit.filter((animation) => animation.setValue(0));
+      fadeAnim.setValue(0);
+      fadeIn(() => {
+        slideInButtons();
+      });
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -63,12 +99,18 @@ const Welcome: FC = () => {
     }
   }, [fontsLoaded]);
 
+  useEffect(() => {
+    if (instrumentPressed) {
+      slideOutButtons(instrumentPressed);
+    }
+  }, [instrumentPressed]);
+
   if (!fontsLoaded) {
     return null;
   }
 
-  const navigateToInstrument = (instrument: string) => {
-    navigation.navigate(Routes.home, { instrument });
+  const handlePress = (instrument: string) => {
+    setInstrumentPressed(instrument);
   };
 
   return (
@@ -87,11 +129,16 @@ const Welcome: FC = () => {
           <Animated.View
             key={instrument}
             style={{
-              transform: [{ translateX: buttonAnimations[index] }],
+              transform: [
+                {
+                  translateX: buttonAnimationsOnEnter[index],
+                },
+                { translateY: buttonAnimationsOnExit[index] },
+              ],
             }}
           >
             <TouchableOpacity
-              onPress={() => navigateToInstrument(instrument)}
+              onPress={() => handlePress(instrument)}
               style={styles.button}
             >
               <Text style={styles.buttonText}>{instrument}</Text>

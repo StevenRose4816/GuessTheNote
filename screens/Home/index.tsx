@@ -147,7 +147,6 @@ const Home: FC = () => {
       const { sound } = await Audio.Sound.createAsync(
         noteFilesFromParam[randomNote]
       );
-      console.log("Sound object:", sound);
       setSound(sound);
       await sound.playAsync();
     } catch (error) {
