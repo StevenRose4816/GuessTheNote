@@ -31,11 +31,11 @@ const Welcome: FC = () => {
   );
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const buttonAnimationsOnEnter = useRef(
+  const buttonAnimationsX = useRef(
     instruments.map(() => new Animated.Value(-screenWidth))
   ).current;
 
-  const buttonAnimationsOnExit = useRef(
+  const buttonAnimationsY = useRef(
     instruments.map(() => new Animated.Value(0)) // want to keep at current position initially
   ).current;
 
@@ -50,7 +50,7 @@ const Welcome: FC = () => {
   const slideInButtons = () => {
     Animated.stagger(
       300,
-      buttonAnimationsOnEnter.map((animation) => {
+      buttonAnimationsX.map((animation) => {
         return Animated.timing(animation, {
           toValue: 0,
           duration: 500,
@@ -63,7 +63,7 @@ const Welcome: FC = () => {
   const slideOutButtons = (instrument: string) => {
     Animated.stagger(
       300,
-      buttonAnimationsOnExit.map((animation) => {
+      buttonAnimationsY.map((animation) => {
         return Animated.timing(animation, {
           toValue: screenHeight,
           duration: 500,
@@ -80,10 +80,8 @@ const Welcome: FC = () => {
   useEffect(() => {
     if (fontsLoaded && isFocused) {
       // reset all animations when the screen is focused, (navigating back focuses)
-      buttonAnimationsOnEnter.forEach((animation) =>
-        animation.setValue(-screenWidth)
-      );
-      buttonAnimationsOnExit.forEach((animation) => animation.setValue(0));
+      buttonAnimationsX.filter((animation) => animation.setValue(-screenWidth));
+      buttonAnimationsY.filter((animation) => animation.setValue(0));
       fadeAnim.setValue(0);
       fadeIn(() => {
         slideInButtons();
@@ -102,7 +100,7 @@ const Welcome: FC = () => {
   useEffect(() => {
     if (instrumentPressed !== null) {
       // reset the position of buttons before sliding out
-      buttonAnimationsOnExit.forEach((animation) => animation.setValue(0));
+      buttonAnimationsY.filter((animation) => animation.setValue(0));
       slideOutButtons(instrumentPressed);
       setInstrumentPressed(null); // rseset the instrumentPressed state to avoid repeated triggers
     }
@@ -134,9 +132,9 @@ const Welcome: FC = () => {
             style={{
               transform: [
                 {
-                  translateX: buttonAnimationsOnEnter[index],
+                  translateX: buttonAnimationsX[index],
                 },
-                { translateY: buttonAnimationsOnExit[index] },
+                { translateY: buttonAnimationsY[index] },
               ],
             }}
           >
