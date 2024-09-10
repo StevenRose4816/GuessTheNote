@@ -80,10 +80,10 @@ const Welcome: FC = () => {
   useEffect(() => {
     if (fontsLoaded && isFocused) {
       // reset all animations when the screen is focused, (navigating back focuses)
-      buttonAnimationsOnEnter.filter((animation) =>
+      buttonAnimationsOnEnter.forEach((animation) =>
         animation.setValue(-screenWidth)
       );
-      buttonAnimationsOnExit.filter((animation) => animation.setValue(0));
+      buttonAnimationsOnExit.forEach((animation) => animation.setValue(0));
       fadeAnim.setValue(0);
       fadeIn(() => {
         slideInButtons();
@@ -100,8 +100,11 @@ const Welcome: FC = () => {
   }, [fontsLoaded]);
 
   useEffect(() => {
-    if (instrumentPressed) {
+    if (instrumentPressed !== null) {
+      // reset the position of buttons before sliding out
+      buttonAnimationsOnExit.forEach((animation) => animation.setValue(0));
       slideOutButtons(instrumentPressed);
+      setInstrumentPressed(null); // rseset the instrumentPressed state to avoid repeated triggers
     }
   }, [instrumentPressed]);
 
