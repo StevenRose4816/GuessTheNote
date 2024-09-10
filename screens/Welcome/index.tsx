@@ -86,16 +86,12 @@ const Welcome: FC = () => {
       fadeIn(() => {
         slideInButtons();
       });
-    }
-  }, [isFocused]);
-
-  useEffect(() => {
-    if (fontsLoaded) {
+    } else if (fontsLoaded && !isFocused) {
       fadeIn(() => {
         slideInButtons();
       });
     }
-  }, [fontsLoaded]);
+  }, [isFocused, fontsLoaded]);
 
   useEffect(() => {
     if (instrumentPressed !== null) {
