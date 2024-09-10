@@ -55,10 +55,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   disabledNoteButton: {
-    backgroundColor: "#B0B0B0",
+    backgroundColor: "#E0E0E050",
   },
   disabledNoteButtonText: {
-    color: "white",
+    color: "grey",
   },
   noteButtonText: {
     color: "#333",

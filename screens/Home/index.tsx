@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -137,35 +137,48 @@ const Home: FC = () => {
     const availableNotes = notes.filter((note) => note !== selectedNote);
     const randomNote =
       availableNotes[Math.floor(Math.random() * availableNotes.length)];
+
     setSelectedNote(randomNote);
     setDisabledNotes([]);
     setPlayButtonDisabled(true);
+
     try {
+      console.log(`Playing note: ${randomNote}`);
       const { sound } = await Audio.Sound.createAsync(
         noteFilesFromParam[randomNote]
       );
+      console.log("Sound object:", sound);
       setSound(sound);
-
-      const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-        if (status.isLoaded) {
-          if (status.isPlaying) {
-            setReplayButtonDisabled(true);
-          } else {
-            setReplayButtonDisabled(false);
-          }
-          if (!status.isBuffering && !status.isPlaying) {
-            // setPlayButtonDisabled(false);
-          }
-        }
-      };
-
-      sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-      await sound.playAsync();
+      await sound.playAsync(); // Ensure sound starts playing
     } catch (error) {
       console.error("Playback error:", error);
       showModal("Error", "Failed to play sound.");
     }
   };
+
+  useEffect(() => {
+    if (sound) {
+      const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+        if (status.isLoaded) {
+          console.log("Playback status:", status);
+          if (status.isPlaying) {
+            setReplayButtonDisabled(true);
+          } else if (!status.isBuffering && !status.isPlaying) {
+            setReplayButtonDisabled(false);
+          }
+        }
+      };
+
+      sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+
+      return () => {
+        // cleaning listener
+        sound.setOnPlaybackStatusUpdate(null);
+        // unload sound after using
+        sound.unloadAsync();
+      };
+    }
+  }, [sound]);
 
   const replayNote = async () => {
     if (!selectedNote) {
@@ -173,26 +186,14 @@ const Home: FC = () => {
       return;
     }
     try {
+      console.log(`Replaying note: ${selectedNote}`);
       const { sound } = await Audio.Sound.createAsync(
         noteFilesFromParam[selectedNote]
       );
+      console.log("Sound object:", sound);
       setSound(sound);
-      setPlayButtonDisabled(true);
-      const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-        if (status.isLoaded) {
-          if (status.isPlaying) {
-            setReplayButtonDisabled(true);
-          } else {
-            setReplayButtonDisabled(false);
-          }
-          if (!status.isBuffering && !status.isPlaying) {
-            // setPlayButtonDisabled(false);
-          }
-        }
-      };
-
-      sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       await sound.playAsync();
+      setPlayButtonDisabled(true);
     } catch (error) {
       console.error("Playback error:", error);
       showModal("Error", "Failed to replay sound.");
@@ -247,7 +248,6 @@ const Home: FC = () => {
   };
 
   const handleIncorrectGuess = () => {
-    // attempts start at 0
     const message = `The correct note was ${selectedNote?.replace(
       "_sharp",
       "#"
@@ -300,8 +300,6 @@ const Home: FC = () => {
   };
 
   const handleModalClose = () => {
-    console.log("replayDisabled: ", replayButtonDisabled);
-    console.log("playDisabled: ", playButtonDisabled);
     const gameOver = attempts === 10 && score < 100;
     const inExtendedPlay = attempts >= 10 && score >= 100;
     if (gameOver && !inExtendedPlay) {
