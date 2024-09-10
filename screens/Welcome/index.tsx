@@ -42,14 +42,14 @@ const Welcome: FC = () => {
   const fadeIn = (callback: () => void) => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 1000,
+      duration: 500,
       useNativeDriver: true,
     }).start(callback);
   };
 
   const slideInButtons = () => {
     Animated.stagger(
-      300,
+      200,
       buttonAnimationsX.map((animation) => {
         return Animated.timing(animation, {
           toValue: 0,
@@ -62,7 +62,7 @@ const Welcome: FC = () => {
 
   const slideOutButtons = (instrument: string) => {
     Animated.stagger(
-      300,
+      200,
       buttonAnimationsY.map((animation) => {
         return Animated.timing(animation, {
           toValue: screenHeight,
