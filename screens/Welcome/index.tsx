@@ -32,17 +32,18 @@ const Welcome: FC = () => {
     instruments.map(() => new Animated.Value(-screenWidth))
   ).current;
 
+  // this is how we set up funcs to be called after another executes
   const fadeIn = (callback: () => void) => {
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 1500,
+      duration: 1200,
       useNativeDriver: true,
     }).start(callback);
   };
 
   const slideInButtons = () => {
     Animated.stagger(
-      200, // Delay between each button's animation start
+      300, // delay between each button's animation start
       buttonAnimations.map((animation, index) => {
         return Animated.timing(animation, {
           toValue: screenWidth * 0.01,
@@ -78,7 +79,7 @@ const Welcome: FC = () => {
         style={{ minWidth: width, marginBottom: 15 }}
       >
         <Animated.Text style={[styles.title, { opacity: fadeAnim }]}>
-          B# or Bb!
+          B# or Bb
         </Animated.Text>
       </ImageBackground>
       <View style={styles.buttonsContainer}>
