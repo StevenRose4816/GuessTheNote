@@ -17,7 +17,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useAppSelector } from "../../hooks";
 
-type Note =
+export type Note =
   | "C"
   | "C_sharp"
   | "D"
@@ -172,6 +172,10 @@ const Home: FC = () => {
   };
 
   useEffect(() => {
+    console.log("statistics: ", statistics);
+  }, [statistics]);
+
+  useEffect(() => {
     if (sound) {
       const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
         if (status.isLoaded) {
@@ -234,7 +238,7 @@ const Home: FC = () => {
         total: prevStats[selectedNote!].total + 1,
       },
     }));
-    console.log("previous statistics: ", statistics);
+
     const gameExtended = attempts + 1 >= 10 && newScore >= 100;
     const gameOver = attempts + 1 >= 10 && newScore < 100;
 
