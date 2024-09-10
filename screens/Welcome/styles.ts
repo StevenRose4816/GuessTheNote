@@ -15,9 +15,6 @@ const styles = StyleSheet.create({
     fontFamily: "jersey-regular",
     color: "#333",
     marginBottom: 40,
-    textShadowColor: "#000",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
   },
   buttonsContainer: {
     width: "100%",

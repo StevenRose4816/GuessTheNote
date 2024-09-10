@@ -29,7 +29,7 @@ const Welcome: FC = () => {
   const [instrumentPressed, setInstrumentPressed] = useState<string | null>(
     null
   );
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnimation = useRef(new Animated.Value(0)).current;
 
   const buttonAnimationsX = useRef(
     instruments.map(() => new Animated.Value(-screenWidth))
@@ -40,7 +40,7 @@ const Welcome: FC = () => {
   ).current;
 
   const fadeIn = (callback: () => void) => {
-    Animated.timing(fadeAnim, {
+    Animated.timing(fadeAnimation, {
       toValue: 1,
       duration: 500,
       useNativeDriver: true,
@@ -103,7 +103,7 @@ const Welcome: FC = () => {
     if (fontsLoaded && isFocused) {
       buttonAnimationsX.filter((animation) => animation.setValue(-screenWidth));
       buttonAnimationsY.filter((animation) => animation.setValue(0));
-      fadeAnim.setValue(0);
+      fadeAnimation.setValue(0);
       fadeIn(() => {
         slideInButtons();
       });
@@ -138,7 +138,7 @@ const Welcome: FC = () => {
         imageStyle={{ opacity: 0.3 }}
         style={{ minWidth: width, marginBottom: 15 }}
       >
-        <Animated.Text style={[styles.title, { opacity: fadeAnim }]}>
+        <Animated.Text style={[styles.title, { opacity: fadeAnimation }]}>
           B# or Bb
         </Animated.Text>
       </ImageBackground>

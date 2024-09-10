@@ -56,6 +56,22 @@ const Home: FC = () => {
   const highScoreRedux = useAppSelector((state) => state.highScore?.highScore);
   const route = useRoute<any>();
   const routeParams = route.params;
+  const [statistics, setStatistics] = useState<
+    Record<Note, { correct: number; total: number }>
+  >({
+    C: { correct: 0, total: 0 },
+    C_sharp: { correct: 0, total: 0 },
+    D: { correct: 0, total: 0 },
+    Eb: { correct: 0, total: 0 },
+    E: { correct: 0, total: 0 },
+    F: { correct: 0, total: 0 },
+    F_sharp: { correct: 0, total: 0 },
+    G: { correct: 0, total: 0 },
+    G_sharp: { correct: 0, total: 0 },
+    A: { correct: 0, total: 0 },
+    Bb: { correct: 0, total: 0 },
+    B: { correct: 0, total: 0 },
+  });
 
   if (!fontsLoaded) {
     return null;
@@ -168,7 +184,6 @@ const Home: FC = () => {
       };
       sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       return () => {
-        // cleaning listener
         sound.setOnPlaybackStatusUpdate(null);
         // unload sound after using
         sound.unloadAsync();
@@ -211,6 +226,15 @@ const Home: FC = () => {
     const newScore = score + 10;
     setScore(newScore);
 
+    setStatistics((prevStats) => ({
+      ...prevStats,
+      [selectedNote!]: {
+        ...prevStats[selectedNote!],
+        correct: prevStats[selectedNote!].correct + 1,
+        total: prevStats[selectedNote!].total + 1,
+      },
+    }));
+    console.log("previous statistics: ", statistics);
     const gameExtended = attempts + 1 >= 10 && newScore >= 100;
     const gameOver = attempts + 1 >= 10 && newScore < 100;
 
@@ -244,6 +268,14 @@ const Home: FC = () => {
   };
 
   const handleIncorrectGuess = () => {
+    setStatistics((prevStats) => ({
+      ...prevStats,
+      [selectedNote!]: {
+        ...prevStats[selectedNote!],
+        total: prevStats[selectedNote!].total + 1,
+      },
+    }));
+    console.log("previous statistics: ", statistics);
     const message = `The correct note was ${selectedNote?.replace(
       "_sharp",
       "#"
@@ -331,6 +363,8 @@ const Home: FC = () => {
         return require("../../assets/watercolorpiano2.jpeg");
     }
   })();
+
+  const calculateStatistics = () => {};
 
   return (
     <ImageBackground
