@@ -83,7 +83,7 @@ const Welcome: FC = () => {
       buttonAnimationsY[selectedIndex],
       {
         toValue: screenHeight,
-        duration: 200,
+        duration: 500,
         useNativeDriver: true,
       }
     );
@@ -107,10 +107,8 @@ const Welcome: FC = () => {
     );
 
     Animated.sequence([
-      Animated.parallel([
-        selectedButtonAnimation,
-        staggeredOtherButtonsAnimations,
-      ]),
+      selectedButtonAnimation,
+      staggeredOtherButtonsAnimations,
       Animated.timing(statsButtonFadeAnimation, {
         toValue: 0,
         duration: 300,
