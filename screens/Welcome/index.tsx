@@ -111,14 +111,9 @@ const Welcome: FC = () => {
         selectedButtonAnimation,
         staggeredOtherButtonsAnimations,
       ]),
-      Animated.timing(fadeAnimation, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }),
       Animated.timing(statsButtonFadeAnimation, {
         toValue: 0,
-        duration: 500,
+        duration: 300,
         useNativeDriver: true,
       }),
     ]).start(() => {
@@ -244,7 +239,7 @@ const Welcome: FC = () => {
         <Animated.View style={{ opacity: statsButtonFadeAnimation }}>
           <TouchableOpacity
             onPress={() => setShowStats(true)}
-            style={[styles.button, { marginTop: 40 }]}
+            style={[styles.button, { marginTop: 40, paddingVertical: 5 }]}
           >
             <Text
               style={[styles.buttonText, { padding: 5, textAlign: "center" }]}
