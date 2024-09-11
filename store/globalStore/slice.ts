@@ -1,6 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Note } from "../../screens/Home";
 
+interface SetHighScorePayload {
+  highScore: number;
+}
+
+interface SetStatisticsPayload {
+  statistics: Record<Note, { correct: number; total: number }>;
+}
+
 export interface IGlobal {
   highScore?: number;
   statistics?: Record<Note, { correct: number; total: number }>;
@@ -28,11 +36,11 @@ const userSlice = createSlice({
   name: "highScoreSlice",
   initialState,
   reducers: {
-    setHighScore(state, action: PayloadAction<IGlobal>) {
+    setHighScore(state, action: PayloadAction<SetHighScorePayload>) {
       const { highScore } = action.payload;
       state.highScore = highScore;
     },
-    setStatistics(state, action: PayloadAction<IGlobal>) {
+    setStatistics(state, action: PayloadAction<SetStatisticsPayload>) {
       const { statistics } = action.payload;
       state.statistics = statistics;
     },

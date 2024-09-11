@@ -6,12 +6,14 @@ import {
   Dimensions,
   ImageBackground,
   Animated,
+  ScrollView,
 } from "react-native";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useFonts } from "expo-font";
 import Routes from "../../navigation/routes";
 import styles from "./styles";
+import { useAppSelector } from "../../hooks";
 
 const Welcome: FC = () => {
   const fontMap = {
@@ -19,6 +21,8 @@ const Welcome: FC = () => {
     "silkscreen-regular": require("../../assets/Silkscreen-Regular.ttf"),
     "silkscreen-bold": require("../../assets/Silkscreen-Bold.ttf"),
   };
+  const statistics = useAppSelector((state) => state.highScore.statistics);
+  const statisticsArray = Object.entries(statistics || {});
   const isFocused = useIsFocused();
   const [fontsLoaded] = useFonts(fontMap);
   const navigation = useNavigation<NativeStackNavigationProp<any, any>>();
@@ -100,6 +104,11 @@ const Welcome: FC = () => {
   };
 
   useEffect(() => {
+    console.log("statistics: ", statistics);
+    console.log("statistics array: ", statisticsArray);
+  }, [statistics, statisticsArray]);
+
+  useEffect(() => {
     if (fontsLoaded && isFocused) {
       buttonAnimationsX.filter((animation) => animation.setValue(-screenWidth));
       buttonAnimationsY.filter((animation) => animation.setValue(0));
@@ -129,6 +138,10 @@ const Welcome: FC = () => {
 
   const handlePress = (instrument: string) => {
     setInstrumentPressed(instrument);
+  };
+
+  const calculatePercentage = (correct: number, total: number) => {
+    return total > 0 ? ((correct / total) * 100).toFixed(2) : "0.00";
   };
 
   return (
@@ -164,6 +177,39 @@ const Welcome: FC = () => {
           </Animated.View>
         ))}
       </View>
+      <ScrollView
+        style={{
+          flex: 1,
+          alignSelf: "center",
+          marginTop: 20,
+          marginBottom: 40,
+          paddingHorizontal: 10,
+        }}
+      >
+        {statisticsArray.map(([note, { correct, total }]) => (
+          <View
+            key={note}
+            style={{
+              marginBottom: 10,
+              width: screenWidth * 0.4,
+              borderWidth: 1,
+              borderColor: "#333",
+              borderRadius: 5,
+              padding: 5,
+            }}
+          >
+            <Text style={{ fontSize: 12, fontWeight: "bold" }}>
+              {note.replace("_sharp", "#")}
+            </Text>
+            <Text style={{ fontSize: 10 }}>
+              Correct: {correct} / Total: {total}
+            </Text>
+            <Text style={{ fontSize: 10 }}>
+              Percentage Correct: {calculatePercentage(correct, total)}%
+            </Text>
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 };

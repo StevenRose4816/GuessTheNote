@@ -10,7 +10,10 @@ import {
 import { Audio, AVPlaybackSource, AVPlaybackStatus } from "expo-av";
 import styles from "./styles";
 import { useDispatch } from "react-redux";
-import { setHighScore as setHighScoreAlias } from "../../store/globalStore/slice";
+import {
+  setHighScore as setHighScoreAlias,
+  setStatistics as setStatisticsAlias,
+} from "../../store/globalStore/slice";
 import { useFonts } from "expo-font";
 import Routes from "../../navigation/routes";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -238,7 +241,7 @@ const Home: FC = () => {
         total: prevStats[selectedNote!].total + 1,
       },
     }));
-
+    dispatch(setStatisticsAlias({ statistics }));
     const gameExtended = attempts + 1 >= 10 && newScore >= 100;
     const gameOver = attempts + 1 >= 10 && newScore < 100;
 
@@ -279,7 +282,7 @@ const Home: FC = () => {
         total: prevStats[selectedNote!].total + 1,
       },
     }));
-    console.log("previous statistics: ", statistics);
+    dispatch(setStatisticsAlias({ statistics }));
     const message = `The correct note was ${selectedNote?.replace(
       "_sharp",
       "#"
