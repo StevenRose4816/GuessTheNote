@@ -33,7 +33,10 @@ const Welcome: FC = () => {
   const [instrumentPressed, setInstrumentPressed] = useState<string | null>(
     null
   );
+  const [showStats, setShowStats] = useState(false);
+
   const fadeAnimation = useRef(new Animated.Value(0)).current;
+  const statsButtonFadeAnimation = useRef(new Animated.Value(0)).current;
 
   const buttonAnimationsX = useRef(
     instruments.map(() => new Animated.Value(-screenWidth))
@@ -51,6 +54,14 @@ const Welcome: FC = () => {
     }).start(callback);
   };
 
+  const fadeInStatsButton = () => {
+    Animated.timing(statsButtonFadeAnimation, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
+
   const slideInButtons = () => {
     Animated.stagger(
       200,
@@ -61,7 +72,9 @@ const Welcome: FC = () => {
           useNativeDriver: true,
         });
       })
-    ).start();
+    ).start(() => {
+      fadeInStatsButton();
+    });
   };
 
   const slideOutButtons = (instrument: string) => {
@@ -94,8 +107,20 @@ const Welcome: FC = () => {
     );
 
     Animated.sequence([
-      selectedButtonAnimation,
-      staggeredOtherButtonsAnimations,
+      Animated.parallel([
+        selectedButtonAnimation,
+        staggeredOtherButtonsAnimations,
+      ]),
+      Animated.timing(fadeAnimation, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(statsButtonFadeAnimation, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
     ]).start(() => {
       if (instrument) {
         navigation.navigate(Routes.home, { instrument });
@@ -104,15 +129,13 @@ const Welcome: FC = () => {
   };
 
   useEffect(() => {
-    console.log("statistics: ", statistics);
-    console.log("statistics array: ", statisticsArray);
-  }, [statistics, statisticsArray]);
-
-  useEffect(() => {
     if (fontsLoaded && isFocused) {
-      buttonAnimationsX.filter((animation) => animation.setValue(-screenWidth));
-      buttonAnimationsY.filter((animation) => animation.setValue(0));
+      buttonAnimationsX.forEach((animation) =>
+        animation.setValue(-screenWidth)
+      );
+      buttonAnimationsY.forEach((animation) => animation.setValue(0));
       fadeAnimation.setValue(0);
+      statsButtonFadeAnimation.setValue(0);
       fadeIn(() => {
         slideInButtons();
       });
@@ -126,7 +149,7 @@ const Welcome: FC = () => {
   useEffect(() => {
     if (instrumentPressed !== null) {
       // reset positions before sliding out
-      buttonAnimationsY.filter((animation) => animation.setValue(0));
+      buttonAnimationsY.forEach((animation) => animation.setValue(0));
       slideOutButtons(instrumentPressed);
       setInstrumentPressed(null);
     }
@@ -177,39 +200,70 @@ const Welcome: FC = () => {
           </Animated.View>
         ))}
       </View>
-      <ScrollView
-        style={{
-          flex: 1,
-          alignSelf: "center",
-          marginTop: 20,
-          marginBottom: 40,
-          paddingHorizontal: 10,
-        }}
-      >
-        {statisticsArray.map(([note, { correct, total }]) => (
-          <View
-            key={note}
-            style={{
-              marginBottom: 10,
-              width: screenWidth * 0.4,
-              borderWidth: 1,
-              borderColor: "#333",
-              borderRadius: 5,
-              padding: 5,
-            }}
+      {showStats ? (
+        <ScrollView
+          style={{
+            flex: 1,
+            alignSelf: "center",
+            marginTop: 20,
+            marginBottom: 20,
+            paddingHorizontal: 10,
+            borderColor: "#333",
+            borderRadius: 5,
+            borderWidth: 1,
+          }}
+        >
+          {statisticsArray.map(([note, { correct, total }]) => (
+            <View
+              key={note}
+              style={{
+                marginBottom: 10,
+                width: screenWidth * 0.8,
+                padding: 5,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "bold",
+                  fontFamily: "jersey-regular",
+                }}
+              >
+                {note.replace("_sharp", "#")}
+              </Text>
+              <Text style={{ fontSize: 12, fontFamily: "jersey-regular" }}>
+                Correct: {correct} / Total: {total}
+              </Text>
+              <Text style={{ fontSize: 12, fontFamily: "jersey-regular" }}>
+                Percentage Correct: {calculatePercentage(correct, total)}%
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
+      ) : (
+        <Animated.View style={{ opacity: statsButtonFadeAnimation }}>
+          <TouchableOpacity
+            onPress={() => setShowStats(true)}
+            style={[styles.button, { marginTop: 40 }]}
           >
-            <Text style={{ fontSize: 12, fontWeight: "bold" }}>
-              {note.replace("_sharp", "#")}
+            <Text
+              style={[styles.buttonText, { padding: 5, textAlign: "center" }]}
+            >
+              User Statistics
             </Text>
-            <Text style={{ fontSize: 10 }}>
-              Correct: {correct} / Total: {total}
-            </Text>
-            <Text style={{ fontSize: 10 }}>
-              Percentage Correct: {calculatePercentage(correct, total)}%
-            </Text>
-          </View>
-        ))}
-      </ScrollView>
+          </TouchableOpacity>
+        </Animated.View>
+      )}
+      {showStats && (
+        <TouchableOpacity
+          style={{ alignSelf: "flex-end" }}
+          onPress={() => setShowStats(false)}
+        >
+          <Text style={{ fontSize: 18, fontFamily: "jersey-regular" }}>
+            Hide Statistics
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
