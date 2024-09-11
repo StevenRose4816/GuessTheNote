@@ -232,16 +232,19 @@ const Home: FC = () => {
   const handleCorrectGuess = () => {
     const newScore = score + 10;
     setScore(newScore);
+    setStatistics((prevStats) => {
+      const updatedStats = {
+        ...prevStats,
+        [selectedNote!]: {
+          ...prevStats[selectedNote!],
+          correct: prevStats[selectedNote!].correct + 1,
+          total: prevStats[selectedNote!].total + 1,
+        },
+      };
+      dispatch(setStatisticsAlias({ statistics: updatedStats }));
+      return updatedStats;
+    });
 
-    setStatistics((prevStats) => ({
-      ...prevStats,
-      [selectedNote!]: {
-        ...prevStats[selectedNote!],
-        correct: prevStats[selectedNote!].correct + 1,
-        total: prevStats[selectedNote!].total + 1,
-      },
-    }));
-    dispatch(setStatisticsAlias({ statistics }));
     const gameExtended = attempts + 1 >= 10 && newScore >= 100;
     const gameOver = attempts + 1 >= 10 && newScore < 100;
 
@@ -275,14 +278,18 @@ const Home: FC = () => {
   };
 
   const handleIncorrectGuess = () => {
-    setStatistics((prevStats) => ({
-      ...prevStats,
-      [selectedNote!]: {
-        ...prevStats[selectedNote!],
-        total: prevStats[selectedNote!].total + 1,
-      },
-    }));
-    dispatch(setStatisticsAlias({ statistics }));
+    setStatistics((prevStats) => {
+      const updatedStats = {
+        ...prevStats,
+        [selectedNote!]: {
+          ...prevStats[selectedNote!],
+          total: prevStats[selectedNote!].total + 1,
+        },
+      };
+      dispatch(setStatisticsAlias({ statistics: updatedStats }));
+      return updatedStats;
+    });
+
     const message = `The correct note was ${selectedNote?.replace(
       "_sharp",
       "#"

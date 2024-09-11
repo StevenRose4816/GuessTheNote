@@ -156,6 +156,7 @@ const Welcome: FC = () => {
 
   const handlePress = (instrument: string) => {
     setInstrumentPressed(instrument);
+    setShowStats(false);
   };
 
   const calculatePercentage = (correct: number, total: number) => {
@@ -206,6 +207,7 @@ const Welcome: FC = () => {
             borderColor: "#333",
             borderRadius: 5,
             borderWidth: 1,
+            backgroundColor: "#E0E0E080",
           }}
         >
           {statisticsArray.map(([note, { correct, total }]) => (
@@ -219,24 +221,28 @@ const Welcome: FC = () => {
             >
               <Text
                 style={{
-                  fontSize: 14,
+                  fontSize: 18,
                   fontWeight: "bold",
                   fontFamily: "jersey-regular",
                 }}
               >
                 {note.replace("_sharp", "#")}
               </Text>
-              <Text style={{ fontSize: 12, fontFamily: "jersey-regular" }}>
+              <Text style={{ fontSize: 14, fontFamily: "jersey-regular" }}>
                 Correct: {correct} / Total: {total}
               </Text>
-              <Text style={{ fontSize: 12, fontFamily: "jersey-regular" }}>
+              <Text style={{ fontSize: 14, fontFamily: "jersey-regular" }}>
                 Percentage Correct: {calculatePercentage(correct, total)}%
               </Text>
             </View>
           ))}
         </ScrollView>
       ) : (
-        <Animated.View style={{ opacity: statsButtonFadeAnimation }}>
+        <Animated.View
+          style={{
+            opacity: statsButtonFadeAnimation,
+          }}
+        >
           <TouchableOpacity
             onPress={() => setShowStats(true)}
             style={[styles.button, { marginTop: 40, paddingVertical: 5 }]}
@@ -244,7 +250,7 @@ const Welcome: FC = () => {
             <Text
               style={[styles.buttonText, { padding: 5, textAlign: "center" }]}
             >
-              User Statistics
+              Statistics
             </Text>
           </TouchableOpacity>
         </Animated.View>
@@ -254,8 +260,14 @@ const Welcome: FC = () => {
           style={{ alignSelf: "flex-end" }}
           onPress={() => setShowStats(false)}
         >
-          <Text style={{ fontSize: 18, fontFamily: "jersey-regular" }}>
-            Hide Statistics
+          <Text
+            style={{
+              fontSize: 18,
+              fontFamily: "jersey-regular",
+              marginRight: 10,
+            }}
+          >
+            Hide
           </Text>
         </TouchableOpacity>
       )}
