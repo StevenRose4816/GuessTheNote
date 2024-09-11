@@ -57,24 +57,27 @@ const Home: FC = () => {
   const [fontsLoaded] = useFonts(fontMap);
   const navigation = useNavigation<NativeStackNavigationProp<any, any>>();
   const highScoreRedux = useAppSelector((state) => state.highScore?.highScore);
+  const statsFromRedux = useAppSelector((state) => state.highScore.statistics);
   const route = useRoute<any>();
   const routeParams = route.params;
   const [statistics, setStatistics] = useState<
     Record<Note, { correct: number; total: number }>
-  >({
-    C: { correct: 0, total: 0 },
-    C_sharp: { correct: 0, total: 0 },
-    D: { correct: 0, total: 0 },
-    Eb: { correct: 0, total: 0 },
-    E: { correct: 0, total: 0 },
-    F: { correct: 0, total: 0 },
-    F_sharp: { correct: 0, total: 0 },
-    G: { correct: 0, total: 0 },
-    G_sharp: { correct: 0, total: 0 },
-    A: { correct: 0, total: 0 },
-    Bb: { correct: 0, total: 0 },
-    B: { correct: 0, total: 0 },
-  });
+  >(
+    statsFromRedux || {
+      C: { correct: 0, total: 0 },
+      C_sharp: { correct: 0, total: 0 },
+      D: { correct: 0, total: 0 },
+      Eb: { correct: 0, total: 0 },
+      E: { correct: 0, total: 0 },
+      F: { correct: 0, total: 0 },
+      F_sharp: { correct: 0, total: 0 },
+      G: { correct: 0, total: 0 },
+      G_sharp: { correct: 0, total: 0 },
+      A: { correct: 0, total: 0 },
+      Bb: { correct: 0, total: 0 },
+      B: { correct: 0, total: 0 },
+    }
+  );
 
   if (!fontsLoaded) {
     return null;
@@ -377,8 +380,6 @@ const Home: FC = () => {
         return require("../../assets/watercolorpiano2.jpeg");
     }
   })();
-
-  const calculateStatistics = () => {};
 
   return (
     <ImageBackground
